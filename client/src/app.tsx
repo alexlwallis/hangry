@@ -5,7 +5,7 @@ type MyState = {
    latitude: Number,
    longitude: Number,
    needsBox: Boolean,
-   location: String
+   location: string
 }
 
 class App extends React.Component<{}, MyState > {
@@ -19,6 +19,7 @@ class App extends React.Component<{}, MyState > {
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount(){
@@ -53,18 +54,34 @@ class App extends React.Component<{}, MyState > {
     })
   }
 
+  handleSubmit(event: any){
+    event.preventDefault();
+    let location: string = this.state.location
+    fetch('/', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
+      },
+      body: location
+    })
+    .then((results) => {console.log('res: ',results)})
+  }
+
 
   render() {
     //We check if needsBox is true, if it is then we start w/ a form and text box.
     return (
       <div>
         {this.state.needsBox
-          // ? <form action="/location" method="post" encType="multipart/form-data">
-            ? <div>
-                <label>What city?</label>
-                <input type='text' name='city' placeholder="City?" onChange={this.changeCity}></input>
-            </div>
-          : <div/>
+          // ? <form action="http://127.0.0.1:7878/" method="post">
+          //       First Name: <input name="city" type="text" /> <br />
+          //       <input type="submit" />
+          //   </form>
+          ? <form onSubmit={this.handleSubmit} >
+                Location: <input type="text" onChange={this.changeCity}/> <br />
+                <input type="submit" />
+            </form>
+          : null
         }
       </div>
     )
