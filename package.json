@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js --mode=development --watch",
+    "api": "tsc server/apiData.ts --outDir server/compiled",
     "server": "tsc server/server.ts --outDir server/compiled | nodemon server/compiled/server.js"
   },
   "keywords": [],
@@ -16,6 +17,8 @@
     "@types/react": "^16.8.19",
     "@types/react-dom": "^16.8.4",
     "awesome-typescript-loader": "^5.2.1",
+    "mongoose": "^5.5.13",
+    "node-fetch": "^2.6.0",
     "nodemon": "^1.19.1",
     "typescript": "^3.5.1",
     "unirest": "^0.6.0",

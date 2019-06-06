@@ -73,10 +73,6 @@ class App extends React.Component<{}, MyState > {
     return (
       <div>
         {this.state.needsBox
-          // ? <form action="http://127.0.0.1:7878/" method="post">
-          //       First Name: <input name="city" type="text" /> <br />
-          //       <input type="submit" />
-          //   </form>
           ? <form onSubmit={this.handleSubmit} >
                 Location: <input type="text" onChange={this.changeCity}/> <br />
                 <input type="submit" />
