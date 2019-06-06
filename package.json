@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js --mode=development --watch",
-    "start": "nodemon server/server.js"
+    "server": "tsc server/server.ts --outDir server/compiled | nodemon server/compiled/server.js"
   },
   "keywords": [],
   "author": "",
