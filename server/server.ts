@@ -16,14 +16,18 @@ app.use('/', express.static(path.resolve('client', 'dist')));
 app.post('/', (req: any, res:any) => {
   // let city = (req.body.city)
   let city = Object.keys(req.body)[0]
-  console.log(city)
-  // api.retrieveData(city, (err:any, res:any) => {
-  //   if (err) {
-  //     throw err;
-  //   } else {
-  //     console.log(res)
-  //   }
-  // })
+  if (city.match(/[a-zA-z]/g)){
+    console.log('string')
+    api.locationToCoords(city)
+  } else {
+    let x = city.split(',')
+    // console.log(x[0])
+    // console.log(x[1])
+    api.retrieveData(x[0], x[1], ((res:any) => {
+      console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+      console.log(res)
+    }))
+  }
 });
 
 

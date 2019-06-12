@@ -8,6 +8,10 @@ type MyState = {
    location: string
 }
 
+type fetch = {
+
+}
+
 class App extends React.Component<{}, MyState > {
   constructor(props:any){
     super(props);
@@ -20,6 +24,7 @@ class App extends React.Component<{}, MyState > {
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.addLatLon = this.addLatLon.bind(this);
   }
 
   componentDidMount(){
@@ -38,6 +43,8 @@ class App extends React.Component<{}, MyState > {
         longitude: lon,
         needsBox: false,
       })
+      //If person wants to use geolocation, we send latitude and longitude to server.
+      this.addLatLon();
     //If there is an error w/ geolocation, we change state, so needsBox is true.
     }, (err) => {
       if (err) {
@@ -51,6 +58,24 @@ class App extends React.Component<{}, MyState > {
   changeCity(event: any){
     this.setState({
       location: event.target.value
+    })
+  }
+
+  addLatLon(){
+    let latSplitLon: string = (this.state.latitude.toString()+','+this.state.longitude.toString())
+    //console.log(latSplitLon)
+    fetch('/', {
+      method: 'POST',
+      //Why does 'application/x-www-form-urlencoded' work but not json? is it because latSplitLon isnt in json format
+      //potentially its lets us use just strings/nonjson.
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
+      },
+      body: (latSplitLon)
+    })
+    .then((results) => {
+      let x: any = results
+      console.log('addLatLon:', x.split(','))
     })
   }
 

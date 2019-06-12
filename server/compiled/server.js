@@ -14,14 +14,18 @@ app.use('/', express.static(path.resolve('client', 'dist')));
 app.post('/', function (req, res) {
     // let city = (req.body.city)
     var city = Object.keys(req.body)[0];
-    console.log(city);
-    api.retrieveData(city, function (err, res) {
-        if (err) {
-            throw err;
-        }
-        else {
+    if (city.match(/[a-zA-z]/g)) {
+        console.log('string');
+        api.locationToCoords(city);
+    }
+    else {
+        var x = city.split(',');
+        // console.log(x[0])
+        // console.log(x[1])
+        api.retrieveData(x[0], x[1], (function (res) {
+            console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~');
             console.log(res);
-        }
-    });
+        }));
+    }
 });
 app.listen(port, function () { return console.log("Express server running at " + port); });
