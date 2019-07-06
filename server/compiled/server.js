@@ -11,20 +11,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/node_modules', express.static('node_modules'));
 app.use('/', express.static(path.resolve('client', 'dist')));
-app.post('/', function (req, res) {
-    // let city = (req.body.city)
-    var city = Object.keys(req.body)[0];
-    if (city.match(/[a-zA-z]/g)) {
-        console.log('string');
-        api.locationToCoords(city);
+app.post('/', function (req, response) {
+    var cityOrCoords = req.body.city;
+    if (cityOrCoords.match(/[a-zA-z]/g)) {
+        console.log('coords: ', cityOrCoords);
+        api.locationToCoords(cityOrCoords, function (result) {
+            console.log(result);
+            response.status(200).send(result);
+        });
     }
     else {
-        var x = city.split(',');
-        // console.log(x[0])
-        // console.log(x[1])
-        api.retrieveData(x[0], x[1], (function (res) {
+        //Geolocation
+        var x = cityOrCoords.split(',');
+        api.retrieveData(x[0], x[1], (function (results) {
             console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-            console.log(res);
+            console.log('results: ', results);
+            response.status(200).send(results);
         }));
     }
 });

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import Axios, * as axios from 'axios';
 
 type MyState = {
    latitude: Number,
@@ -25,10 +26,18 @@ class App extends React.Component<{}, MyState > {
     this.changeCity = this.changeCity.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addLatLon = this.addLatLon.bind(this);
+    this.fetchPost = this.fetchPost.bind(this);
   }
 
   componentDidMount(){
     this.geo();
+    this.fetchPost();
+  }
+
+  async fetchPost(){
+    fetch('/data')
+    //.then(d => d.json())
+    .then(s => console.log('FP: ',s))
   }
 
 
@@ -63,33 +72,37 @@ class App extends React.Component<{}, MyState > {
 
   addLatLon(){
     let latSplitLon: string = (this.state.latitude.toString()+','+this.state.longitude.toString())
-    //console.log(latSplitLon)
     fetch('/', {
       method: 'POST',
       //Why does 'application/x-www-form-urlencoded' work but not json? is it because latSplitLon isnt in json format
       //potentially its lets us use just strings/nonjson.
       headers: {
-        'Content-type': 'application/x-www-form-urlencoded'
+        'Content-type': "application/json"
       },
-      body: (latSplitLon)
+      body: JSON.stringify({'city':latSplitLon})
     })
-    .then((results) => {
-      let x: any = results
-      console.log('addLatLon:', x.split(','))
+    .then((res: any) => {
+      console.log('latLonfetch: ',res);
+    })
+    .catch((err:any) => {
+      console.error(err);
     })
   }
 
   handleSubmit(event: any){
     event.preventDefault();
-    let location: string = this.state.location
+    let location = this.state.location
+    console.log(location)
     fetch('/', {
       method: 'POST',
       headers: {
-        'Content-type': 'application/x-www-form-urlencoded'
+        'Content-type': 'application/json'
       },
-      body: location
+      body: JSON.stringify({'city':location})
     })
-    .then((results) => {console.log('res: ',results)})
+    .then((res: any) => {
+      console.log('res!!!:  ',res);
+    })
   }
 
 

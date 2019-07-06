@@ -44,32 +44,6 @@ var keyPath = path.resolve('key.json');
 var key = require(keyPath).key;
 var axios = require("axios");
 var StringDecoder = require('string_decoder').StringDecoder;
-// export async function retrieveData(lat: String, lon:String){
-//   //Change count to 20 later.
-//   fetch(`https://developers.zomato.com/api/v2.1/search?count=1&lat=${lat}&lon=${lon}&apikey=${key}`, {
-//   method: 'GET',
-//   headers: {
-//       "access-control-allow-credentials": "true",
-//       "access-control-allow-headers": "X-Zomato-API-Key",
-//       "access-control-allow-methods": "GET, POST, DELETE, PUT, PATCH, OPTIONS",
-//       "access-control-allow-origin": "*",
-//       "content-type": 'application/json'
-//     }
-//   })
-//   .catch((error:any) => console.log(error))
-//   //.then((bufferToString: any) => bufferToString.body._buffer.toString())
-//   .then((bufferToString: any) => {
-//     // var decoder = new StringDecoder('utf8');
-//     // console.log(x.toString('utf8'))
-//     //console.log(y)
-//     //console.log(aData.indexOf(aData[0]))
-//     // for (let i=0; i<100; i++) {
-//     //   console.log(z['data'].indexOf(z['data'][i]))
-//     // }
-//   })
-//   //.then((dataObj: any) => dataObj.json())
-//   //.then((data: any) =>  console.log(data))
-// }
 function retrieveData(lat, lon, cb) {
     return __awaiter(this, void 0, void 0, function () {
         var parameters;
@@ -95,7 +69,6 @@ function retrieveData(lat, lon, cb) {
                     var key = (item.restaurant.name);
                     var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating];
                     necessaryData[key] = interestingData;
-                    //console.log(necessaryData);
                 });
                 cb(necessaryData);
             })["catch"](function (err) { return console.log(err); });
@@ -104,19 +77,25 @@ function retrieveData(lat, lon, cb) {
     });
 }
 exports.retrieveData = retrieveData;
-function locationToCoords(query) {
-    fetch("https://developers.zomato.com/api/v2.1/locations?query=" + query + "&apikey=" + key, {
-        method: 'GET',
+function locationToCoords(q, cb) {
+    var parameters = {
+        q: q
+    };
+    axios.get('https://developers.zomato.com/api/v2.1/cities', {
+        params: parameters,
         headers: {
-            "access-control-allow-credentials": "true",
-            "access-control-allow-headers": "X-Zomato-API-Key",
-            "access-control-allow-methods": "GET, POST, DELETE, PUT, PATCH, OPTIONS",
-            "access-control-allow-origin": "*",
-            "content-type": 'application/json'
+            'user-key': key,
+            'Accept': 'application/json'
         }
-    })["catch"](function (error) { return console.log(error); })
-        .then(function (bufferToString) { return bufferToString.body._buffer.toString(); })
-        .then(function (dataObj) { return console.log(dataObj.location_suggestions); });
+    })
+        .then(function (res) {
+        //console.log('res: ',res.data.location_suggestions)
+        var necessaryData = {};
+        res.data.location_suggestions.map(function (item) {
+            var name = item.name;
+            necessaryData[name] = [item.country_name, item.id];
+        });
+        cb(necessaryData);
+    });
 }
 exports.locationToCoords = locationToCoords;
-//retrieveData('Berkeley');
