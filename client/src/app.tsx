@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Axios, * as axios from 'axios';
+import Potentials from './components/Potentials'
 
 
 type MyState = {
@@ -132,8 +133,8 @@ class App extends React.Component<{}, MyState> {
                 <input type="submit" />
             </form>
           : null}
-        {this.state.locationsBool ?
-          <p></p>
+        {this.state.possibleLocations.length > 0 ?
+          <Potentials locations={this.state.possibleLocations}/>
         : null}
       </div>
     )
