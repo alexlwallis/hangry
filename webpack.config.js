@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   entry: __dirname+'/client/src/app.tsx',
   output: {
@@ -10,4 +12,3 @@ module.exports = {
     ]
   }
 };
-

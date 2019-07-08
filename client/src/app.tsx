@@ -2,44 +2,37 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Axios, * as axios from 'axios';
 
+
 type MyState = {
    latitude: Number,
    longitude: Number,
    needsBox: Boolean,
-   location: string
+   location: string,
+   possibleLocations: Array<String>,
+   locationsBool: Boolean
 }
 
-type fetch = {
-
-}
-
-class App extends React.Component<{}, MyState > {
+class App extends React.Component<{}, MyState> {
   constructor(props:any){
     super(props);
     this.state = {
       latitude: 0,
       longitude: 0,
       needsBox: false,
-      location: ''
+      location: '',
+      possibleLocations: [],
+      locationsBool: false
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addLatLon = this.addLatLon.bind(this);
-    this.fetchPost = this.fetchPost.bind(this);
+    this.objToArray = this.objToArray.bind(this);
   }
 
   componentDidMount(){
     this.geo();
-    this.fetchPost();
   }
-
-  async fetchPost(){
-    fetch('/data')
-    //.then(d => d.json())
-    .then(s => console.log('FP: ',s))
-  }
-
 
   geo(){
     //Use first arg in callback to update state w/ longitude+latitude+whether or input is needed if user allows geolocation.
@@ -96,27 +89,52 @@ class App extends React.Component<{}, MyState > {
     fetch('/', {
       method: 'POST',
       headers: {
+        'Accept': 'application/json',
         'Content-type': 'application/json'
       },
       body: JSON.stringify({'city':location})
     })
-    .then((res: any) => {
-      console.log('res!!!:  ',res);
+    .then((a: any) =>{
+      return a.json();
+    })
+    .then((json: Object) => {
+      let convertedArray:any = this.objToArray(json);
+      this.setState({
+        possibleLocations: convertedArray,
+        locationsBool: true
+      })
     })
   }
+
+  objToArray(obj:any){
+    let bigArr = [];
+    for (let prop in obj) {
+      let smallArr = [];
+      smallArr.push(prop);
+      smallArr.push(obj[prop]);
+      bigArr.push(smallArr);
+      bigArr.push('\n')
+      smallArr = [];
+    }
+    return bigArr;
+  }
+
+
 
 
   render() {
     //We check if needsBox is true, if it is then we start w/ a form and text box.
     return (
       <div>
-        {this.state.needsBox
-          ? <form onSubmit={this.handleSubmit} >
+        {this.state.needsBox ?
+            <form onSubmit={this.handleSubmit} >
                 Location: <input type="text" onChange={this.changeCity}/> <br />
                 <input type="submit" />
             </form>
-          : null
-        }
+          : null}
+        {this.state.locationsBool ?
+          <p></p>
+        : null}
       </div>
     )
   }
