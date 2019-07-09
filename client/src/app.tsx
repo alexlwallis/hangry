@@ -144,6 +144,7 @@ class App extends React.Component<{}, MyState> {
   }
 
   sendingEntityId(id:Number){
+    console.log(JSON.stringify({'city':id}))
     fetch('/', {
       method: 'POST',
       //Why does 'application/x-www-form-urlencoded' work but not json? is it because latSplitLon isnt in json format
@@ -152,24 +153,24 @@ class App extends React.Component<{}, MyState> {
         'Accept': 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({'city':id})
+      body: JSON.stringify({'city': String(id)})
     })
+    //https://developer.mozilla.org/en-US/docs/Web/API/Body/json
+    //So here we get the body of the response and reads it and parses
+    //it as json, it returns a promise. And we cannot console.log()
+    //this because you just get a promise obj, you need to use another .then
+    //because then that will allow that promise enough time to resolve?
     .then((res:any) => {
-      console.log('sEI: ',res);
-      console.log(res.json());
+      return (res.json());
     })
-    // .then((res: any) => {
-    //   return res.json();
-    // })
-    // .then((json: Object) => {
-    //   console.log(json)
-    //   // this.setState({
-    //   //   restaurantObj: json
-    //   // })
-    // })
-    // .catch((err:any) => {
-    //   console.error(err);
-    // })
+    .then((reso:any) => {
+      this.setState({
+        restaurantObj: reso
+      })
+    })
+    .catch((err: any) => {
+      console.error(err);
+    })
   }
 
 

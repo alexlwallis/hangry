@@ -68,7 +68,7 @@ function retrieveData(lat, lon, cb) {
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
-                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating];
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment];
                                 necessaryData[key] = interestingData;
                             });
                             cb(necessaryData);
@@ -91,7 +91,7 @@ function chosenPlaceToRestaurants(id, cb) {
                 case 0:
                     param = {
                         entity_id: id,
-                        type: 'city'
+                        entity_type: 'city'
                     };
                     return [4 /*yield*/, axios.get('https://developers.zomato.com/api/v2.1/search', {
                             params: param,
@@ -101,8 +101,15 @@ function chosenPlaceToRestaurants(id, cb) {
                             }
                         })
                             .then(function (res) {
-                            console.log(res.data.restaurants);
-                        })];
+                            //console.log(res.data.restaurants);
+                            var necessaryData = {};
+                            res.data.restaurants.map(function (item) {
+                                var key = (item.restaurant.name);
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment];
+                                necessaryData[key] = interestingData;
+                            });
+                            cb(necessaryData);
+                        })["catch"](function (err) { console.error(err); })];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
@@ -123,13 +130,13 @@ function locationToCoords(q, cb) {
         }
     })
         .then(function (res) {
-        console.log('res: ', res.data.location_suggestions);
+        //console.log('res: ',res.data.location_suggestions)
         var necessaryData = {};
         res.data.location_suggestions.map(function (item) {
             var name = item.name;
             necessaryData[name] = [item.country_name, item.id];
         });
         cb(necessaryData);
-    });
+    })["catch"](function (err) { console.error(err); });
 }
 exports.locationToCoords = locationToCoords;

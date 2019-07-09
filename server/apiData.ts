@@ -35,7 +35,7 @@ export async function retrieveData(lat: String, lon:String, cb: Function){
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
-      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating]
+      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment]
       necessaryData[key] = interestingData;
     })
     cb(necessaryData)
@@ -50,7 +50,7 @@ export async function chosenPlaceToRestaurants(id:string, cb:Function){
   }
   const param = {
     entity_id: id,
-    type: 'city'
+    entity_type: 'city'
   }
   await axios.get('https://developers.zomato.com/api/v2.1/search', {
     params: param,
@@ -60,8 +60,16 @@ export async function chosenPlaceToRestaurants(id:string, cb:Function){
     }
   })
   .then((res: any) => {
-    console.log(res.data.restaurants);
+    //console.log(res.data.restaurants);
+    let necessaryData: any = {}
+    res.data.restaurants.map((item: any) => {
+      let key = (item.restaurant.name)
+      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment]
+      necessaryData[key] = interestingData;
+    })
+    cb(necessaryData)
   })
+  .catch((err:any) => {console.error(err)});
 }
 
 
@@ -81,13 +89,13 @@ export function locationToCoords(q: string, cb:Function){
     }
   })
   .then((res: any) => {
-    console.log('res: ',res.data.location_suggestions)
+    //console.log('res: ',res.data.location_suggestions)
     let necessaryData: any = {};
     res.data.location_suggestions.map((item:any) => {
       let name = item.name
       necessaryData[name] = [item.country_name, item.id]
     })
     cb(necessaryData)
-
   })
+  .catch((err:any) => {console.error(err)});
 }

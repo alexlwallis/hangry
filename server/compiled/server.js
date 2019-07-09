@@ -17,14 +17,14 @@ app.post('/', function (req, response) {
     if (typeof cityOrCoordsOrId === 'number') {
         console.log('ID:!!! ', cityOrCoordsOrId);
         api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), (function (res) {
-            console.log(res);
+            console.log('res:!!: ', res);
             response.status(200).send(res);
         }));
     }
     else if (cityOrCoordsOrId.match(/[a-zA-z]/g)) {
         console.log('coords: ', cityOrCoordsOrId);
         api.locationToCoords(cityOrCoordsOrId, function (result) {
-            console.log(result);
+            //console.log(result)
             response.status(200).send(result);
         });
     }

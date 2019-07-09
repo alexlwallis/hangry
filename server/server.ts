@@ -20,13 +20,13 @@ app.post('/', (req: any, response:any) => {
   if (typeof cityOrCoordsOrId === 'number') {
     console.log('ID:!!! ', cityOrCoordsOrId);
     api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), ((res:any) => {
-      console.log(res);
+      console.log('res:!!: server.ts ',res);
       response.status(200).send(res)
     }))
   } else if (cityOrCoordsOrId.match(/[a-zA-z]/g)){
     console.log('coords: ',cityOrCoordsOrId)
     api.locationToCoords(cityOrCoordsOrId, (result:Object) => {
-      console.log(result)
+      //console.log(result)
       response.status(200).send(result)
     })
   } else {
