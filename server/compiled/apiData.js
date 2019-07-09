@@ -43,40 +43,74 @@ var fetch = require('node-fetch');
 var keyPath = path.resolve('key.json');
 var key = require(keyPath).key;
 var axios = require("axios");
-var StringDecoder = require('string_decoder').StringDecoder;
 function retrieveData(lat, lon, cb) {
     return __awaiter(this, void 0, void 0, function () {
         var parameters;
         return __generator(this, function (_a) {
-            parameters = {
-                lat: lat,
-                lon: lon
-            };
-            //Looks like axios abstracts away the buffers?
-            //Unsure if putting await before axios.get makes it slower..
-            axios.get('https://developers.zomato.com/api/v2.1/search', {
-                params: parameters,
-                headers: {
-                    'user-key': key,
-                    'Accept': 'application/json'
-                }
-            })
-                .then(function (res) {
-                //For some reason if I set necessaryData to Object it wont let me add a key to it a la necessaryData.key
-                //future reading => https://stackoverflow.com/questions/32968332/how-do-i-prevent-the-error-index-signature-of-object-type-implicitly-has-an-an
-                var necessaryData = {};
-                res.data.restaurants.map(function (item) {
-                    var key = (item.restaurant.name);
-                    var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating];
-                    necessaryData[key] = interestingData;
-                });
-                cb(necessaryData);
-            })["catch"](function (err) { return console.log(err); });
-            return [2 /*return*/];
+            switch (_a.label) {
+                case 0:
+                    parameters = {
+                        lat: lat,
+                        lon: lon
+                    };
+                    //Looks like axios abstracts away the buffers?
+                    //Unsure if putting await before axios.get makes it slower..
+                    return [4 /*yield*/, axios.get('https://developers.zomato.com/api/v2.1/search', {
+                            params: parameters,
+                            headers: {
+                                'user-key': key,
+                                'Accept': 'application/json'
+                            }
+                        })
+                            .then(function (res) {
+                            //For some reason if I set necessaryData to Object it wont let me add a key to it a la necessaryData.key
+                            //future reading => https://stackoverflow.com/questions/32968332/how-do-i-prevent-the-error-index-signature-of-object-type-implicitly-has-an-an
+                            var necessaryData = {};
+                            res.data.restaurants.map(function (item) {
+                                var key = (item.restaurant.name);
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating];
+                                necessaryData[key] = interestingData;
+                            });
+                            cb(necessaryData);
+                        })["catch"](function (err) { return console.log(err); })];
+                case 1:
+                    //Looks like axios abstracts away the buffers?
+                    //Unsure if putting await before axios.get makes it slower..
+                    _a.sent();
+                    return [2 /*return*/];
+            }
         });
     });
 }
 exports.retrieveData = retrieveData;
+function chosenPlaceToRestaurants(id, cb) {
+    return __awaiter(this, void 0, void 0, function () {
+        var param;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    param = {
+                        entity_id: id,
+                        type: 'city'
+                    };
+                    return [4 /*yield*/, axios.get('https://developers.zomato.com/api/v2.1/search', {
+                            params: param,
+                            headers: {
+                                'user-key': key,
+                                'Accept': 'application/json'
+                            }
+                        })
+                            .then(function (res) {
+                            console.log(res.data.restaurants);
+                        })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.chosenPlaceToRestaurants = chosenPlaceToRestaurants;
 function locationToCoords(q, cb) {
     var parameters = {
         q: q
@@ -89,7 +123,7 @@ function locationToCoords(q, cb) {
         }
     })
         .then(function (res) {
-        //console.log('res: ',res.data.location_suggestions)
+        console.log('res: ', res.data.location_suggestions);
         var necessaryData = {};
         res.data.location_suggestions.map(function (item) {
             var name = item.name;

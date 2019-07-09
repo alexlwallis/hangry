@@ -12,17 +12,25 @@ app.use(bodyParser.json());
 app.use('/node_modules', express.static('node_modules'));
 app.use('/', express.static(path.resolve('client', 'dist')));
 app.post('/', function (req, response) {
-    var cityOrCoords = req.body.city;
-    if (cityOrCoords.match(/[a-zA-z]/g)) {
-        console.log('coords: ', cityOrCoords);
-        api.locationToCoords(cityOrCoords, function (result) {
+    var cityOrCoordsOrId = req.body.city;
+    console.log('cityOrCoordsOrId: ', cityOrCoordsOrId);
+    if (typeof cityOrCoordsOrId === 'number') {
+        console.log('ID:!!! ', cityOrCoordsOrId);
+        api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), (function (res) {
+            console.log(res);
+            response.status(200).send(res);
+        }));
+    }
+    else if (cityOrCoordsOrId.match(/[a-zA-z]/g)) {
+        console.log('coords: ', cityOrCoordsOrId);
+        api.locationToCoords(cityOrCoordsOrId, function (result) {
             console.log(result);
             response.status(200).send(result);
         });
     }
     else {
         //Geolocation
-        var x = cityOrCoords.split(',');
+        var x = cityOrCoordsOrId.split(',');
         api.retrieveData(x[0], x[1], (function (results) {
             console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~');
             console.log('results: ', results);

@@ -8,7 +8,6 @@ const fetch = require('node-fetch');
 var keyPath = path.resolve('key.json');
 let key = require(keyPath).key
 const axios = require("axios");
-var StringDecoder = require('string_decoder').StringDecoder;
 
 export async function retrieveData(lat: String, lon:String, cb: Function){
   //Change count to 20 later.
@@ -23,7 +22,7 @@ export async function retrieveData(lat: String, lon:String, cb: Function){
   }
   //Looks like axios abstracts away the buffers?
   //Unsure if putting await before axios.get makes it slower..
-  axios.get('https://developers.zomato.com/api/v2.1/search', {
+  await axios.get('https://developers.zomato.com/api/v2.1/search', {
     params: parameters,
     headers: {
       'user-key': key,
@@ -44,6 +43,27 @@ export async function retrieveData(lat: String, lon:String, cb: Function){
   .catch((err: any) => console.log(err))
 }
 
+export async function chosenPlaceToRestaurants(id:string, cb:Function){
+  type param = {
+    entity_id: string,
+    entity_type: string
+  }
+  const param = {
+    entity_id: id,
+    type: 'city'
+  }
+  await axios.get('https://developers.zomato.com/api/v2.1/search', {
+    params: param,
+    headers: {
+      'user-key': key,
+      'Accept':'application/json'
+    }
+  })
+  .then((res: any) => {
+    console.log(res.data.restaurants);
+  })
+}
+
 
 
 export function locationToCoords(q: string, cb:Function){
@@ -61,7 +81,7 @@ export function locationToCoords(q: string, cb:Function){
     }
   })
   .then((res: any) => {
-    //console.log('res: ',res.data.location_suggestions)
+    console.log('res: ',res.data.location_suggestions)
     let necessaryData: any = {};
     res.data.location_suggestions.map((item:any) => {
       let name = item.name

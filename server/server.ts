@@ -15,16 +15,23 @@ app.use('/node_modules', express.static('node_modules'));
 app.use('/', express.static(path.resolve('client', 'dist')));
 
 app.post('/', (req: any, response:any) => {
-  let cityOrCoords = req.body.city
-  if (cityOrCoords.match(/[a-zA-z]/g)){
-    console.log('coords: ',cityOrCoords)
-    api.locationToCoords(cityOrCoords, (result:Object) => {
+  let cityOrCoordsOrId = req.body.city
+  console.log('cityOrCoordsOrId: ', cityOrCoordsOrId);
+  if (typeof cityOrCoordsOrId === 'number') {
+    console.log('ID:!!! ', cityOrCoordsOrId);
+    api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), ((res:any) => {
+      console.log(res);
+      response.status(200).send(res)
+    }))
+  } else if (cityOrCoordsOrId.match(/[a-zA-z]/g)){
+    console.log('coords: ',cityOrCoordsOrId)
+    api.locationToCoords(cityOrCoordsOrId, (result:Object) => {
       console.log(result)
       response.status(200).send(result)
     })
   } else {
     //Geolocation
-    let x = cityOrCoords.split(',')
+    let x = cityOrCoordsOrId.split(',')
     api.retrieveData(x[0], x[1], ((results:any) => {
       console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~')
       console.log('results: ',results)

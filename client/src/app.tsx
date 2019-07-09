@@ -10,7 +10,8 @@ type MyState = {
    needsBox: Boolean,
    location: string,
    possibleLocations: Array<String>,
-   actualLocation: string
+   actualID: any,
+   restaurantObj: Object
 }
 
 class App extends React.Component<{}, MyState> {
@@ -22,7 +23,8 @@ class App extends React.Component<{}, MyState> {
       needsBox: false,
       location: '',
       possibleLocations: [],
-      actualLocation: ''
+      actualID: 0,
+      restaurantObj: {}
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
@@ -30,6 +32,9 @@ class App extends React.Component<{}, MyState> {
     this.addLatLon = this.addLatLon.bind(this);
     this.objToArray = this.objToArray.bind(this);
     this.childData = this.childData.bind(this);
+    this.cleanUp = this.cleanUp.bind(this);
+    this.stringToNumberArr = this.stringToNumberArr.bind(this);
+    this.sendingEntityId = this.sendingEntityId.bind(this);
   }
 
   componentDidMount(){
@@ -77,7 +82,12 @@ class App extends React.Component<{}, MyState> {
       body: JSON.stringify({'city':latSplitLon})
     })
     .then((res: any) => {
-      console.log('latLonfetch: ',res);
+      return res.json();
+    })
+    .then((json: Object) => {
+      this.setState({
+        restaurantObj: json
+      })
     })
     .catch((err:any) => {
       console.error(err);
@@ -121,12 +131,64 @@ class App extends React.Component<{}, MyState> {
   }
 
   childData(val:string){
-    this.setState({
-      actualLocation: val
-    });
+    let idsString = (val.split('[')[1])
+    let id = (val.split('$')[1])
+    let actualAddress = (val.split('$')[0])
+    let altered = this.stringToNumberArr(idsString);
+    // this.setState({
+    //   actualID: altered[Number(id)],
+    //   //Setting possibleLocations to emptyArr gets rid of cities from DOM
+    //   possibleLocations: []
+    // })
+    this.sendingEntityId(altered[Number(id)]);
+  }
+
+  sendingEntityId(id:Number){
+    fetch('/', {
+      method: 'POST',
+      //Why does 'application/x-www-form-urlencoded' work but not json? is it because latSplitLon isnt in json format
+      //potentially its lets us use just strings/nonjson.
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({'city':id})
+    })
+    .then((res:any) => {
+      console.log('sEI: ',res);
+      console.log(res.json());
+    })
+    // .then((res: any) => {
+    //   return res.json();
+    // })
+    // .then((json: Object) => {
+    //   console.log(json)
+    //   // this.setState({
+    //   //   restaurantObj: json
+    //   // })
+    // })
+    // .catch((err:any) => {
+    //   console.error(err);
+    // })
   }
 
 
+  stringToNumberArr(strArr:String){
+    let arr = []
+    let splitOnComma = strArr.split(',')
+    for (let i=0; i<splitOnComma.length;i++){
+      arr.push(Number(splitOnComma[i]))
+    }
+    return arr;
+  }
+
+    //Now they wont see the entityID
+  cleanUp(x:any){
+    for (let i=0; i<x.length; i++){
+      (x[i][2].splice(1,1))
+    }
+    return x
+  }
 
   render() {
     //We check if needsBox is true, if it is then we start w/ a form and text box.
@@ -142,7 +204,7 @@ class App extends React.Component<{}, MyState> {
           <div>
             <h1>We think you live in...</h1>
             <h3>Click your location</h3>
-            <Potentials locations={this.state.possibleLocations} child={this.childData}/>
+            <Potentials locations={(this.state.possibleLocations)} child={this.childData}/>
           </div>
         : null}
       </div>
