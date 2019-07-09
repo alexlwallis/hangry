@@ -10,7 +10,7 @@ type MyState = {
    needsBox: Boolean,
    location: string,
    possibleLocations: Array<String>,
-   locationsBool: Boolean
+   actualLocation: string
 }
 
 class App extends React.Component<{}, MyState> {
@@ -22,13 +22,14 @@ class App extends React.Component<{}, MyState> {
       needsBox: false,
       location: '',
       possibleLocations: [],
-      locationsBool: false
+      actualLocation: ''
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addLatLon = this.addLatLon.bind(this);
     this.objToArray = this.objToArray.bind(this);
+    this.childData = this.childData.bind(this);
   }
 
   componentDidMount(){
@@ -102,7 +103,6 @@ class App extends React.Component<{}, MyState> {
       let convertedArray:any = this.objToArray(json);
       this.setState({
         possibleLocations: convertedArray,
-        locationsBool: true
       })
     })
   }
@@ -112,14 +112,19 @@ class App extends React.Component<{}, MyState> {
     for (let prop in obj) {
       let smallArr = [];
       smallArr.push(prop);
+      smallArr.push('\t')
       smallArr.push(obj[prop]);
       bigArr.push(smallArr);
-      bigArr.push('\n')
       smallArr = [];
     }
     return bigArr;
   }
 
+  childData(val:string){
+    this.setState({
+      actualLocation: val
+    });
+  }
 
 
 
@@ -134,7 +139,11 @@ class App extends React.Component<{}, MyState> {
             </form>
           : null}
         {this.state.possibleLocations.length > 0 ?
-          <Potentials locations={this.state.possibleLocations}/>
+          <div>
+            <h1>We think you live in...</h1>
+            <h3>Click your location</h3>
+            <Potentials locations={this.state.possibleLocations} child={this.childData}/>
+          </div>
         : null}
       </div>
     )
