@@ -60,7 +60,7 @@ export async function chosenPlaceToRestaurants(id:string, cb:Function){
     }
   })
   .then((res: any) => {
-    //console.log(res.data.restaurants);
+    console.log(res);
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)

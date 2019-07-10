@@ -14,10 +14,11 @@ app.use('/', express.static(path.resolve('client', 'dist')));
 app.post('/', function (req, response) {
     var cityOrCoordsOrId = req.body.city;
     console.log('cityOrCoordsOrId: ', cityOrCoordsOrId);
+    console.log(typeof cityOrCoordsOrId);
     if (typeof cityOrCoordsOrId === 'number') {
         console.log('ID:!!! ', cityOrCoordsOrId);
         api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), (function (res) {
-            console.log('res:!!: ', res);
+            console.log('res:!!: server.ts ', res);
             response.status(200).send(res);
         }));
     }

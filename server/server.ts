@@ -17,6 +17,7 @@ app.use('/', express.static(path.resolve('client', 'dist')));
 app.post('/', (req: any, response:any) => {
   let cityOrCoordsOrId = req.body.city
   console.log('cityOrCoordsOrId: ', cityOrCoordsOrId);
+  console.log(typeof cityOrCoordsOrId)
   if (typeof cityOrCoordsOrId === 'number') {
     console.log('ID:!!! ', cityOrCoordsOrId);
     api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), ((res:any) => {

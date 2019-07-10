@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Axios, * as axios from 'axios';
 import Potentials from './components/Potentials'
-
+import FormAndData from './components/FormAndData'
 
 type MyState = {
    latitude: Number,
@@ -135,12 +135,13 @@ class App extends React.Component<{}, MyState> {
     let id = (val.split('$')[1])
     let actualAddress = (val.split('$')[0])
     let altered = this.stringToNumberArr(idsString);
-    // this.setState({
-    //   actualID: altered[Number(id)],
-    //   //Setting possibleLocations to emptyArr gets rid of cities from DOM
-    //   possibleLocations: []
-    // })
+    this.setState({
+      //actualID: altered[Number(id)],
+      //Setting possibleLocations to emptyArr gets rid of cities from DOM
+      possibleLocations: []
+    })
     this.sendingEntityId(altered[Number(id)]);
+    //this.sendingEntityId(this.state.actualID)
   }
 
   sendingEntityId(id:Number){
@@ -153,7 +154,7 @@ class App extends React.Component<{}, MyState> {
         'Accept': 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({'city': String(id)})
+      body: JSON.stringify({'city': (id)})
     })
     //https://developer.mozilla.org/en-US/docs/Web/API/Body/json
     //So here we get the body of the response and reads it and parses
@@ -208,6 +209,11 @@ class App extends React.Component<{}, MyState> {
             <Potentials locations={(this.state.possibleLocations)} child={this.childData}/>
           </div>
         : null}
+
+        {this.state.restaurantObj ?
+          <FormAndData restaurants={this.state.restaurantObj} />
+          :null
+        }
       </div>
     )
   }

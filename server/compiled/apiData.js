@@ -101,7 +101,7 @@ function chosenPlaceToRestaurants(id, cb) {
                             }
                         })
                             .then(function (res) {
-                            //console.log(res.data.restaurants);
+                            console.log(res);
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
