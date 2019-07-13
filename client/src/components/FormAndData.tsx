@@ -88,30 +88,72 @@ export default class FormAndData extends Component<mProps, mState>{
         }
       }
     }
-    console.log(priceAndFormality)
-    this.grouping();
+    for (let obj in this.props.restaurants){
+      console.log(Object.keys(this.props.restaurants[obj]))
+    }
+    // console.log(Object.keys(this.props.restaurants));
+   //console.log('priceAndFormality: ',priceAndFormality)
+    this.grouping(priceAndFormality);
   }
 
 
-  grouping(){
+  grouping(pAndF:Array<String>){
     let foodGroups:any = {
-      'American': ['american', 'burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings'],
+      'American': ['american', 'burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings', 'burger',],
       'Mexican': ['burritos', 'tacos', 'quesadillas', 'chile con carne'],
-      'Breakfast': ['eggs', 'pancakes', 'waffles'],
-      'Pizza': ['pizza', 'italian', 'lasagna'],
-      getDiner: function() {return this.foodGroups.Breakfast + this.foodGroups.American+ 'diner', 'burgers', 'fries'},
+      'Breakfast': ['eggs', 'pancakes', 'waffles', ],
+      'Pizza': ['pizza', 'italian', 'lasagna', 'pizzeria'],
+      getDiner: function() {return [this.Breakfast,this.American,'diner', 'burgers', 'fries'].flat()},
       'Japanese': ['japanese', 'sushi', 'bento box', 'ramen'],
       'Indian': ['indian', 'pakistani', 'tikka masala', 'naan'],
-      'Ice Cream': ['dessert', 'ice cream', 'cake'],
-      getSpanish: function() {return this.foodGroups.Mexican + ['paella', 'spanish']},
+      'Ice Cream': ['dessert', 'ice cream', 'cake', 'Dessert Parlour'],
+      getSpanish: function() {return [this.Mexican,'paella','spanish'].flat()},
       'Korean': ['korean', 'kbbq'],
-      getMed: function(){return this.foodGroups.Italian + ['mediterranean', 'greek', 'italian']}
+      getMed: function(){return this.Pizza + [,'mediterranean', 'greek', 'italian']}
     }
+
     let sanitizeInput = this.state.typeOfCuisine.toLowerCase();
 
-    for (let prop in foodGroups){
-
+    var compareInputToFoodGroups:any = () => {
+      let emptyArr:any = []
+      for (let prop in foodGroups){
+        if (typeof foodGroups[prop] === 'object'){
+          console.log('obj')
+          foodGroups[prop].filter((item:Array<String>) => {
+            if (item.includes(sanitizeInput) && emptyArr.length === 0){
+              emptyArr = (foodGroups[prop])
+            }
+          })
+        } else if (typeof foodGroups[prop] === 'function' && emptyArr.length === 0) {
+          let x = (foodGroups[prop]());
+          console.log('f(x)')
+          if (x.includes(sanitizeInput)){
+            emptyArr = (x);
+          }
+        } else if (emptyArr.length === 0){
+          emptyArr.push('Not found :\'(');
+        }
+      }
+      return emptyArr;
     }
+
+
+    let compareAgain = () => {
+      console.log('compareAgain()')
+      let x:any = compareInputToFoodGroups();
+      let possibleRestaurants:Array<String> = [];
+      for (let i=0; i<pAndF.length; i++) {
+        if (x.includes((pAndF[i][1]).toLowerCase())){
+          possibleRestaurants.push(pAndF[i]);
+        }
+      }
+      console.log(this.props.restaurants);
+      console.log(possibleRestaurants);
+      return possibleRestaurants;
+    }
+
+    compareAgain();
+
 
   }
 
@@ -143,7 +185,7 @@ export default class FormAndData extends Component<mProps, mState>{
         <label>What sort of food do you want?</label>
         <input onChange={this.cuisineInput} type="text"></input>
         <br></br>
-        <label>Max price you would spend for one person?</label>
+        <label>Max price you would spend for 2 people?</label>
         <input onChange={this.priceRange} type="number" />
         <br></br>
         <label>Level of formality?</label>
