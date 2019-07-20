@@ -84,23 +84,29 @@ export default class FormAndData extends Component<mProps, mState>{
     if (this.state.fineDine) {
       for (let obj in priceAdjusted){
         if (priceAdjusted[obj][6] === 'Fine Dining'){
-          priceAndFormality.push(priceAdjusted[obj])
+          priceAndFormality.push(obj)
         }
       }
     }
-    for (let obj in this.props.restaurants){
-      console.log(Object.keys(this.props.restaurants[obj]))
+
+    for (let i=0; i<this.props.restaurants.length; i++) {
+      console.log('xx: ',this.props.restaurants[i])
     }
+    // for (let i=0; i<priceAndFormality.length; i++) {
+    //   console.log(priceAndFormality[i][0])
+    // }
+
     // console.log(Object.keys(this.props.restaurants));
-   //console.log('priceAndFormality: ',priceAndFormality)
-    this.grouping(priceAndFormality);
+    console.log('priceAndFormality: ',priceAndFormality)
+    this.grouping(priceAndFormality); //Restaurants that match price/formality level
+
   }
 
 
   grouping(pAndF:Array<String>){
     let foodGroups:any = {
       'American': ['american', 'burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings', 'burger',],
-      'Mexican': ['burritos', 'tacos', 'quesadillas', 'chile con carne'],
+      'Mexican': ['burritos', 'tacos', 'quesadillas', 'chile con carne', 'mexican', 'burrito'],
       'Breakfast': ['eggs', 'pancakes', 'waffles', ],
       'Pizza': ['pizza', 'italian', 'lasagna', 'pizzeria'],
       getDiner: function() {return [this.Breakfast,this.American,'diner', 'burgers', 'fries'].flat()},
@@ -141,20 +147,27 @@ export default class FormAndData extends Component<mProps, mState>{
     let compareAgain = () => {
       console.log('compareAgain()')
       let x:any = compareInputToFoodGroups();
+      console.log('x: ',x);
       let possibleRestaurants:Array<String> = [];
-      for (let i=0; i<pAndF.length; i++) {
-        if (x.includes((pAndF[i][1]).toLowerCase())){
-          possibleRestaurants.push(pAndF[i]);
+      let flattenResArray:Array<String> = [];
+      for (let i=0; i<pAndF.length; i++){
+        if (pAndF[i][1].includes(',')){
+          pAndF[i][1].split(',').map((item) => {
+            if (x.includes(item.trim().toLowerCase())){
+              possibleRestaurants.push(pAndF[i])
+            }
+          })
+        } else {
+          if (x.includes(pAndF[i][1].toLowerCase())){
+            possibleRestaurants.push(pAndF[i])
+          }
         }
       }
-      console.log(this.props.restaurants);
-      console.log(possibleRestaurants);
+      // console.log(this.props.restaurants);
+      console.log('z: ',possibleRestaurants);
       return possibleRestaurants;
     }
-
     compareAgain();
-
-
   }
 
   //let foodGroups = {}
