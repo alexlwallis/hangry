@@ -115,7 +115,7 @@ export default class FormAndData extends Component<mProps, mState>{
       'Ice Cream': ['dessert', 'ice cream', 'cake', 'Dessert Parlour'],
       getSpanish: function() {return [this.Mexican,'paella','spanish'].flat()},
       'Korean': ['korean', 'kbbq'],
-      getMed: function(){return this.Pizza + [,'mediterranean', 'greek', 'italian']}
+      getMed: function(){return [this.Pizza,'mediterranean', 'greek', 'italian'].flat()}
     }
 
     let sanitizeInput = this.state.typeOfCuisine.toLowerCase();

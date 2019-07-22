@@ -43,7 +43,7 @@ var fetch = require('node-fetch');
 var keyPath = path.resolve('key.json');
 var key = require(keyPath).key;
 var axios = require("axios");
-function retrieveData(lat, lon, cb) {
+function retrieveData(lat, lon, start, count, cb) {
     return __awaiter(this, void 0, void 0, function () {
         var parameters;
         return __generator(this, function (_a) {
@@ -51,7 +51,9 @@ function retrieveData(lat, lon, cb) {
                 case 0:
                     parameters = {
                         lat: lat,
-                        lon: lon
+                        lon: lon,
+                        start: start,
+                        count: count
                     };
                     //Looks like axios abstracts away the buffers?
                     //Unsure if putting await before axios.get makes it slower..
@@ -65,6 +67,7 @@ function retrieveData(lat, lon, cb) {
                             .then(function (res) {
                             //For some reason if I set necessaryData to Object it wont let me add a key to it a la necessaryData.key
                             //future reading => https://stackoverflow.com/questions/32968332/how-do-i-prevent-the-error-index-signature-of-object-type-implicitly-has-an-an
+                            //console.log('retrieveData: ', res)
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
@@ -101,7 +104,7 @@ function chosenPlaceToRestaurants(id, cb) {
                             }
                         })
                             .then(function (res) {
-                            console.log(res);
+                            console.log('chosenPlaceToRestaurants: ', res);
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);

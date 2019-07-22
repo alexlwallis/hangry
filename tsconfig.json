@@ -3,6 +3,7 @@
   // enabling the VSCode build tasks "tsc: build" and "tsc: watch".
   "compilerOptions": {
     "target": "es6",            // Compatible with older browsers
+    "lib": ["dom", "esnext.array"], //https://stackoverflow.com/questions/53556409/typescript-flatmap-flat-flatten-doesnt-exist-on-type-any
     "module": "commonjs",
     "moduleResolution": "node", // Tell tsc to look in node_modules for modules
     "sourceMap": true,          // Creates *.js.map files

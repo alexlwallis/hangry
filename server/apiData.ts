@@ -9,16 +9,20 @@ var keyPath = path.resolve('key.json');
 let key = require(keyPath).key
 const axios = require("axios");
 
-export async function retrieveData(lat: String, lon:String, cb: Function){
+export async function retrieveData(lat: String, lon:String, start:Number, count:Number, cb: Function){
   //Change count to 20 later.
   type parameters = {
     lat: String,
     lon: String,
+    start: Number,
+    count: Number
   }
 
   const parameters = {
     lat: lat,
     lon: lon,
+    start: start,
+    count: count
   }
   //Looks like axios abstracts away the buffers?
   //Unsure if putting await before axios.get makes it slower..
@@ -32,6 +36,7 @@ export async function retrieveData(lat: String, lon:String, cb: Function){
   .then((res: any) => {
     //For some reason if I set necessaryData to Object it wont let me add a key to it a la necessaryData.key
     //future reading => https://stackoverflow.com/questions/32968332/how-do-i-prevent-the-error-index-signature-of-object-type-implicitly-has-an-an
+    //console.log('retrieveData: ', res)
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
@@ -46,11 +51,12 @@ export async function retrieveData(lat: String, lon:String, cb: Function){
 export async function chosenPlaceToRestaurants(id:string, cb:Function){
   type param = {
     entity_id: string,
-    entity_type: string
+    entity_type: string,
+
   }
   const param = {
     entity_id: id,
-    entity_type: 'city'
+    entity_type: 'city',
   }
   await axios.get('https://developers.zomato.com/api/v2.1/search', {
     params: param,
@@ -60,7 +66,7 @@ export async function chosenPlaceToRestaurants(id:string, cb:Function){
     }
   })
   .then((res: any) => {
-    console.log(res);
+    console.log('chosenPlaceToRestaurants: ', res)
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
