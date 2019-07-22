@@ -30,14 +30,12 @@ app.post('/', function (req, response) {
         //Geolocation
         var x = cityOrCoordsOrId.split(',');
         var start = 0;
-        var count = 19;
+        var count = 24;
         var longArrayOfRestaurants_1 = [];
-        while (count <= 99) {
-            console.log(count);
+        while (count <= 104) {
             api.retrieveData(x[0], x[1], start, count, (function (results) {
                 longArrayOfRestaurants_1.push(results);
                 if (longArrayOfRestaurants_1.length === 5) {
-                    console.log('y');
                     response.status(200).send(longArrayOfRestaurants_1);
                 }
             }));

@@ -84,9 +84,11 @@ class App extends React.Component<{}, MyState> {
     .then((res: any) => {
       return res.json();
     })
-    .then((json: Object) => {
+    .then((json: Array<Object>) => {
+      let obj = Object.assign({}, json[0], json[1], json[2], json[3], json[4])
+      //For whatever reason it doesn't want to give 100 restaurants back - gives around ~95
       this.setState({
-        restaurantObj: json
+        restaurantObj: obj
       })
     })
     .catch((err:any) => {

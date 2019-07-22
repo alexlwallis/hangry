@@ -34,8 +34,7 @@ app.post('/', (req: any, response:any) => {
     let start = 0;
     let count = 19;
     let longArrayOfRestaurants:any = [];
-    while (count <= 99) {
-      console.log(count);
+    while (count <= 100) {
       api.retrieveData(x[0], x[1], start, count,((results:any) => {
         longArrayOfRestaurants.push(results)
         if (longArrayOfRestaurants.length === 5){
