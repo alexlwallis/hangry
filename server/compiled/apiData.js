@@ -71,7 +71,7 @@ function retrieveData(lat, lon, start, count, cb) {
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
-                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment];
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name];
                                 necessaryData[key] = interestingData;
                             });
                             cb(necessaryData);
@@ -86,7 +86,7 @@ function retrieveData(lat, lon, start, count, cb) {
     });
 }
 exports.retrieveData = retrieveData;
-function chosenPlaceToRestaurants(id, cb) {
+function chosenPlaceToRestaurants(id, start, count, cb) {
     return __awaiter(this, void 0, void 0, function () {
         var param;
         return __generator(this, function (_a) {
@@ -94,7 +94,9 @@ function chosenPlaceToRestaurants(id, cb) {
                 case 0:
                     param = {
                         entity_id: id,
-                        entity_type: 'city'
+                        entity_type: 'city',
+                        start: start,
+                        count: count
                     };
                     return [4 /*yield*/, axios.get('https://developers.zomato.com/api/v2.1/search', {
                             params: param,
@@ -104,13 +106,13 @@ function chosenPlaceToRestaurants(id, cb) {
                             }
                         })
                             .then(function (res) {
-                            console.log('chosenPlaceToRestaurants: ', res);
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
-                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment];
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name];
                                 necessaryData[key] = interestingData;
                             });
+                            console.log('necessaryData: ~~~~~~~~', necessaryData);
                             cb(necessaryData);
                         })["catch"](function (err) { console.error(err); })];
                 case 1:

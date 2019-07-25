@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import Axios, * as axios from 'axios';
 import Potentials from './components/Potentials'
 import FormAndData from './components/FormAndData'
+import RestaurantList from './components/RestaurantList';
 
 type MyState = {
    latitude: Number,
@@ -11,7 +12,9 @@ type MyState = {
    location: string,
    possibleLocations: Array<String>,
    actualID: any,
-   restaurantObj: Object
+   restaurantObj: Object,
+   haveRestaurantList: Boolean,
+   ActualRestaurants: any
 }
 
 class App extends React.Component<{}, MyState> {
@@ -24,7 +27,9 @@ class App extends React.Component<{}, MyState> {
       location: '',
       possibleLocations: [],
       actualID: 0,
-      restaurantObj: {}
+      restaurantObj: {},
+      haveRestaurantList: false,
+      ActualRestaurants: []
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
@@ -35,6 +40,7 @@ class App extends React.Component<{}, MyState> {
     this.cleanUp = this.cleanUp.bind(this);
     this.stringToNumberArr = this.stringToNumberArr.bind(this);
     this.sendingEntityId = this.sendingEntityId.bind(this);
+    this.FormAndDataToApp = this.FormAndDataToApp.bind(this);
   }
 
   componentDidMount(){
@@ -88,7 +94,8 @@ class App extends React.Component<{}, MyState> {
       let obj = Object.assign({}, json[0], json[1], json[2], json[3], json[4])
       //For whatever reason it doesn't want to give 100 restaurants back - gives around ~95
       this.setState({
-        restaurantObj: obj
+        restaurantObj: obj,
+        haveRestaurantList: true
       })
     })
     .catch((err:any) => {
@@ -146,6 +153,12 @@ class App extends React.Component<{}, MyState> {
     //this.sendingEntityId(this.state.actualID)
   }
 
+  FormAndDataToApp(val:any){
+    this.setState({
+      ActualRestaurants: val
+    })
+  }
+
   sendingEntityId(id:Number){
     console.log(JSON.stringify({'city':id}))
     fetch('/', {
@@ -166,9 +179,12 @@ class App extends React.Component<{}, MyState> {
     .then((res:any) => {
       return (res.json());
     })
-    .then((reso:any) => {
+    .then((json:any) => {
+      console.log('Am I here?')
+      let obj = Object.assign({}, json[0], json[1], json[2], json[3], json[4])
       this.setState({
-        restaurantObj: reso
+        restaurantObj: obj,
+        haveRestaurantList: true
       })
     })
     .catch((err: any) => {
@@ -196,6 +212,8 @@ class App extends React.Component<{}, MyState> {
 
   render() {
     //We check if needsBox is true, if it is then we start w/ a form and text box.
+
+    //Need to make the input button clickable only when restaurantObj is populated.
     return (
       <div>
         {this.state.needsBox ?
@@ -213,9 +231,11 @@ class App extends React.Component<{}, MyState> {
         : null}
 
         {this.state.restaurantObj ?
-          <FormAndData restaurants={this.state.restaurantObj} />
-          :null
-        }
+          <FormAndData restaurants={this.state.restaurantObj} child={this.FormAndDataToApp}/>
+          :null}
+        {this.state.ActualRestaurants ?
+          <RestaurantList list={this.state.ActualRestaurants} />
+        :null}
       </div>
     )
   }

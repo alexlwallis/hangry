@@ -15,10 +15,23 @@ app.post('/', function (req, response) {
     var cityOrCoordsOrId = req.body.city;
     console.log('cityOrCoordsOrId: ', cityOrCoordsOrId);
     if (typeof cityOrCoordsOrId === 'number') {
-        api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), (function (res) {
-            console.log('res:!!: server.ts ', res);
-            response.status(200).send(res);
-        }));
+        // api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), ((res:any) => {
+        //   console.log('res:!!: server.ts ',res);
+        //   response.status(200).send(res)
+        // }))
+        var start = 0;
+        var count = 19;
+        var longArrayOfRestaurants_1 = [];
+        while (count <= 100) {
+            api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), start, count, (function (results) {
+                longArrayOfRestaurants_1.push(results);
+                if (longArrayOfRestaurants_1.length === 5) {
+                    response.status(200).send(longArrayOfRestaurants_1);
+                }
+            }));
+            start = start + 20;
+            count = count + 20;
+        }
     }
     else if (cityOrCoordsOrId.match(/[a-zA-z]/g)) {
         console.log('coords: ', cityOrCoordsOrId);
@@ -30,13 +43,13 @@ app.post('/', function (req, response) {
         //Geolocation
         var x = cityOrCoordsOrId.split(',');
         var start = 0;
-        var count = 24;
-        var longArrayOfRestaurants_1 = [];
-        while (count <= 104) {
+        var count = 19;
+        var longArrayOfRestaurants_2 = [];
+        while (count <= 100) {
             api.retrieveData(x[0], x[1], start, count, (function (results) {
-                longArrayOfRestaurants_1.push(results);
-                if (longArrayOfRestaurants_1.length === 5) {
-                    response.status(200).send(longArrayOfRestaurants_1);
+                longArrayOfRestaurants_2.push(results);
+                if (longArrayOfRestaurants_2.length === 5) {
+                    response.status(200).send(longArrayOfRestaurants_2);
                 }
             }));
             start = start + 20;

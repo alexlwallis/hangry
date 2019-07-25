@@ -40,7 +40,7 @@ export async function retrieveData(lat: String, lon:String, start:Number, count:
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
-      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment]
+      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name]
       necessaryData[key] = interestingData;
     })
     cb(necessaryData)
@@ -48,15 +48,18 @@ export async function retrieveData(lat: String, lon:String, start:Number, count:
   .catch((err: any) => console.log(err))
 }
 
-export async function chosenPlaceToRestaurants(id:string, cb:Function){
+export async function chosenPlaceToRestaurants(id:string, start:Number, count:Number, cb:Function){
   type param = {
     entity_id: string,
     entity_type: string,
-
+    start: Number,
+    count: Number
   }
   const param = {
     entity_id: id,
     entity_type: 'city',
+    start: start,
+    count: count
   }
   await axios.get('https://developers.zomato.com/api/v2.1/search', {
     params: param,
@@ -66,13 +69,13 @@ export async function chosenPlaceToRestaurants(id:string, cb:Function){
     }
   })
   .then((res: any) => {
-    console.log('chosenPlaceToRestaurants: ', res)
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
-      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment]
+      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name]
       necessaryData[key] = interestingData;
     })
+    console.log('necessaryData: ~~~~~~~~',necessaryData)
     cb(necessaryData)
   })
   .catch((err:any) => {console.error(err)});

@@ -3,7 +3,8 @@ import { Component } from "react";
 
 
 type mProps = {
-  restaurants: any
+  restaurants: any,
+  child: any
 }
 
 type mState = {
@@ -11,7 +12,8 @@ type mState = {
   typeOfCuisine: String,
   priceRange: Number,
   fineDine: Boolean,
-  casualDine: Boolean
+  casualDine: Boolean,
+  resOptions: Array<String>
 };
 
 
@@ -24,6 +26,7 @@ export default class FormAndData extends Component<mProps, mState>{
       priceRange: 0,
       fineDine: false,
       casualDine: false,
+      resOptions: []
     }
     this.cuisineInput = this.cuisineInput.bind(this);
     this.priceRange = this.priceRange.bind(this);
@@ -90,7 +93,7 @@ export default class FormAndData extends Component<mProps, mState>{
     }
 
     for (let i=0; i<this.props.restaurants.length; i++) {
-      console.log('xx: ',this.props.restaurants[i])
+      //console.log('xx: ',this.props.restaurants[i])
     }
     // for (let i=0; i<priceAndFormality.length; i++) {
     //   console.log(priceAndFormality[i][0])
@@ -143,7 +146,6 @@ export default class FormAndData extends Component<mProps, mState>{
       return emptyArr;
     }
 
-
     let compareAgain = () => {
       console.log('compareAgain()')
       let x:any = compareInputToFoodGroups();
@@ -167,7 +169,13 @@ export default class FormAndData extends Component<mProps, mState>{
       console.log('z: ',possibleRestaurants);
       return possibleRestaurants;
     }
-    compareAgain();
+
+    let x = compareAgain();
+    this.props.child(x);
+
+    this.setState({
+      resOptions: compareAgain()
+    })
   }
 
   //let foodGroups = {}

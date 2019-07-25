@@ -18,11 +18,23 @@ app.post('/', (req: any, response:any) => {
   let cityOrCoordsOrId = req.body.city
   console.log('cityOrCoordsOrId: ', cityOrCoordsOrId);
   if (typeof cityOrCoordsOrId === 'number') {
-      api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), ((res:any) => {
-        console.log('res:!!: server.ts ',res);
-        response.status(200).send(res)
+      // api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), ((res:any) => {
+      //   console.log('res:!!: server.ts ',res);
+      //   response.status(200).send(res)
+      // }))
+    let start = 0;
+    let count = 19;
+    let longArrayOfRestaurants:any = [];
+    while (count <= 100) {
+      api.chosenPlaceToRestaurants(String(cityOrCoordsOrId), start, count,((results:any) => {
+        longArrayOfRestaurants.push(results)
+        if (longArrayOfRestaurants.length === 5){
+          response.status(200).send(longArrayOfRestaurants)
+        }
       }))
-
+      start = start + 20;
+      count = count + 20;
+    }
   } else if (cityOrCoordsOrId.match(/[a-zA-z]/g)){
     console.log('coords: ',cityOrCoordsOrId)
     api.locationToCoords(cityOrCoordsOrId, (result:Object) => {
