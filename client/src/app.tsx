@@ -14,7 +14,7 @@ type MyState = {
    actualID: any,
    restaurantObj: Object,
    haveRestaurantList: Boolean,
-   ActualRestaurants: any
+   ActualRestaurants: Object
 }
 
 class App extends React.Component<{}, MyState> {
@@ -29,7 +29,7 @@ class App extends React.Component<{}, MyState> {
       actualID: 0,
       restaurantObj: {},
       haveRestaurantList: false,
-      ActualRestaurants: []
+      ActualRestaurants: {}
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
@@ -154,8 +154,15 @@ class App extends React.Component<{}, MyState> {
   }
 
   FormAndDataToApp(val:any){
+    let x:any = {}
+    for (let i=0; i<val.length; i++){
+      if (!x.hasOwnProperty(val[i][0])){
+        x[val[i][7]] = val[i]
+      }
+    }
+    console.log('val!!!:', x)
     this.setState({
-      ActualRestaurants: val
+      ActualRestaurants: x
     })
   }
 
@@ -233,7 +240,8 @@ class App extends React.Component<{}, MyState> {
         {this.state.restaurantObj ?
           <FormAndData restaurants={this.state.restaurantObj} child={this.FormAndDataToApp}/>
           :null}
-        {this.state.ActualRestaurants ?
+        {/* Only way I could  */}
+        {Object.keys(this.state.ActualRestaurants).length > 0 ?
           <RestaurantList list={this.state.ActualRestaurants} />
         :null}
       </div>
