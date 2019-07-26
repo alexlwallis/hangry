@@ -217,6 +217,14 @@ class App extends React.Component<{}, MyState> {
     return x
   }
 
+
+  calculationWithHaversine(){
+    //Need to check if user gave us location
+    //Send his location coords here.
+    //Send all the restaurant information here including
+    //but will need to add in location coords to apiData
+  }
+
   render() {
     //We check if needsBox is true, if it is then we start w/ a form and text box.
 
