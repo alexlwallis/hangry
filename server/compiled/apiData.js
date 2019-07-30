@@ -71,7 +71,7 @@ function retrieveData(lat, lon, start, count, cb) {
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
-                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name];
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude];
                                 necessaryData[key] = interestingData;
                             });
                             cb(necessaryData);
@@ -109,7 +109,7 @@ function chosenPlaceToRestaurants(id, start, count, cb) {
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
-                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name];
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude];
                                 necessaryData[key] = interestingData;
                             });
                             console.log('necessaryData: ~~~~~~~~', necessaryData);

@@ -14,7 +14,7 @@ type MyState = {
    actualID: any,
    restaurantObj: Object,
    haveRestaurantList: Boolean,
-   ActualRestaurants: Object
+   ActualRestaurants: any
 }
 
 class App extends React.Component<{}, MyState> {
@@ -41,6 +41,8 @@ class App extends React.Component<{}, MyState> {
     this.stringToNumberArr = this.stringToNumberArr.bind(this);
     this.sendingEntityId = this.sendingEntityId.bind(this);
     this.FormAndDataToApp = this.FormAndDataToApp.bind(this);
+    this.calculationWithHaversine = this.calculationWithHaversine.bind(this);
+    this.haversineFormula = this.haversineFormula.bind(this);
   }
 
   componentDidMount(){
@@ -163,6 +165,8 @@ class App extends React.Component<{}, MyState> {
     console.log('val!!!:', x)
     this.setState({
       ActualRestaurants: x
+    },() => {
+      this.calculationWithHaversine();
     })
   }
 
@@ -217,18 +221,50 @@ class App extends React.Component<{}, MyState> {
     return x
   }
 
-
   calculationWithHaversine(){
     //Need to check if user gave us location
     //Send his location coords here.
-    //Send all the restaurant information here including
-    //but will need to add in location coords to apiData
+    let latitude = Number(this.state.latitude);
+    let longitude = Number(this.state.longitude);
+    if (this.state.longitude && this.state.latitude && Object.keys(this.state.ActualRestaurants).length > 0){
+      for (let obj in this.state.ActualRestaurants){
+        let lat = Number(this.state.ActualRestaurants[obj][8]);
+        let lon = Number(this.state.ActualRestaurants[obj][9]);
+        //console.log(this.state.ActualRestaurants[obj]);
+        this.state.ActualRestaurants[obj][10] = this.haversineFormula(latitude, longitude, lat, lon)
+      }
+    }
+    let updatedAR = this.state.ActualRestaurants;
+    console.log('updatedAR: ',updatedAR);
+    this.setState({
+      ActualRestaurants: updatedAR
+    })
+    console.log(Object.values(this.state.ActualRestaurants)[0]);
+      //Send all the restaurant information here including
+      //but will need to add in location coords to apiData
+  }
+
+  haversineFormula(currentLatitude:number, currentLongitude:number, restaurantLat: number, restaurantLon: number){
+    let degreesToRadians = (deg:number) => {
+      return deg * (Math.PI/180)
+    }
+    let radius = 3961;
+    let dlat:number = degreesToRadians(restaurantLat - currentLatitude);
+    let dlon:number = degreesToRadians(restaurantLon - currentLongitude);
+    let radianCurrentLat:number = degreesToRadians(currentLatitude);
+    let radianRestaurantLat:number = degreesToRadians(restaurantLat);
+    let A = (Math.sin(dlat/2) * Math.sin(dlat/2)) +
+            (Math.cos(radianCurrentLat) * Math.cos(radianRestaurantLat) * Math.sin(dlon/2) * Math.sin(dlon/2))
+    let c = 2 * Math.atan2(Math.sqrt(A), Math.sqrt(1-A));
+    let answer = String(radius * c).slice(0,4)
+    return answer
   }
 
   render() {
     //We check if needsBox is true, if it is then we start w/ a form and text box.
 
     //Need to make the input button clickable only when restaurantObj is populated.
+
     return (
       <div>
         {this.state.needsBox ?
