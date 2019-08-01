@@ -6,6 +6,7 @@ const port = process.env.PORT || 7878
 const bodyParser = require("body-parser");
 import * as api from './apiData'
 import * as Axios from 'axios';
+// import * as db from '../db/mongoDB'
 
 //Both of these two are needed so we can parse the inputs of the form
 app.use(bodyParser.urlencoded({extended: true}));
@@ -58,5 +59,9 @@ app.post('/', (req: any, response:any) => {
     }
   }
 });
+
+// app.post('database', (req:any, res:any) => {
+//   db.add();
+// })
 
 app.listen(port, () => console.log(`Express server running at ${port}`))

@@ -17,7 +17,7 @@ type MyState = {
    ActualRestaurants: any
 }
 
-class App extends React.Component<{}, MyState> {
+export default class App extends React.Component<{}, MyState> {
   constructor(props:any){
     super(props);
     this.state = {
@@ -43,6 +43,7 @@ class App extends React.Component<{}, MyState> {
     this.FormAndDataToApp = this.FormAndDataToApp.bind(this);
     this.calculationWithHaversine = this.calculationWithHaversine.bind(this);
     this.haversineFormula = this.haversineFormula.bind(this);
+    this.desiredCuisine = this.desiredCuisine.bind(this);
   }
 
   componentDidMount(){
@@ -230,18 +231,13 @@ class App extends React.Component<{}, MyState> {
       for (let obj in this.state.ActualRestaurants){
         let lat = Number(this.state.ActualRestaurants[obj][8]);
         let lon = Number(this.state.ActualRestaurants[obj][9]);
-        //console.log(this.state.ActualRestaurants[obj]);
         this.state.ActualRestaurants[obj][10] = this.haversineFormula(latitude, longitude, lat, lon)
       }
     }
     let updatedAR = this.state.ActualRestaurants;
-    console.log('updatedAR: ',updatedAR);
     this.setState({
       ActualRestaurants: updatedAR
     })
-    console.log(Object.values(this.state.ActualRestaurants)[0]);
-      //Send all the restaurant information here including
-      //but will need to add in location coords to apiData
   }
 
   haversineFormula(currentLatitude:number, currentLongitude:number, restaurantLat: number, restaurantLon: number){
@@ -258,6 +254,10 @@ class App extends React.Component<{}, MyState> {
     let c = 2 * Math.atan2(Math.sqrt(A), Math.sqrt(1-A));
     let answer = String(radius * c).slice(0,4)
     return answer
+  }
+
+  desiredCuisine(val:any){
+    console.log('desiredCuisine:  ',val);
   }
 
   render() {
@@ -286,11 +286,12 @@ class App extends React.Component<{}, MyState> {
           :null}
         {/* Only way I could  */}
         {Object.keys(this.state.ActualRestaurants).length > 0 ?
-          <RestaurantList list={this.state.ActualRestaurants} />
+          <RestaurantList list={this.state.ActualRestaurants} child={this.desiredCuisine}/>
         :null}
       </div>
     )
   }
 }
+
 
 ReactDOM.render(<App />, document.getElementById('app'))
