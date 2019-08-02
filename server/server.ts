@@ -6,11 +6,28 @@ const port = process.env.PORT || 7878
 const bodyParser = require("body-parser");
 import * as api from './apiData'
 import * as Axios from 'axios';
-// import * as db from '../db/mongoDB'
+
+//Because importing this file when you tsc + outDir it'll need to tsc db file too.
+import * as db from '../db/mongoDB'
+
+// console.log(path.resolve('db', 'mongoDB'));
 
 //Both of these two are needed so we can parse the inputs of the form
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+
+app.use(express.static(path.resolve('client', 'dist')));
+
+app.get('/db', (request:any, result:any) => {
+  db.find((err:any, res:any) => {
+    if (err) {
+      throw err;
+    } else {
+      console.log('res!!: ',res);
+      result.status(200).send(JSON.stringify(res));
+    }
+  })
+})
 
 app.use('/node_modules', express.static('node_modules'));
 app.use('/', express.static(path.resolve('client', 'dist')));
@@ -60,8 +77,5 @@ app.post('/', (req: any, response:any) => {
   }
 });
 
-// app.post('database', (req:any, res:any) => {
-//   db.add();
-// })
 
 app.listen(port, () => console.log(`Express server running at ${port}`))

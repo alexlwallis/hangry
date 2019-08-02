@@ -6,9 +6,15 @@ var path = require('path');
 var port = process.env.PORT || 7878;
 var bodyParser = require("body-parser");
 var api = require("./apiData");
+// import * as db from '../db/mongoDB'
+// console.log(path.resolve('db', 'mongoDB'));
 //Both of these two are needed so we can parse the inputs of the form
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.static(path.resolve('client', 'dist')));
+app.get('/d', function (req, res) {
+    res.send('hello');
+});
 app.use('/node_modules', express.static('node_modules'));
 app.use('/', express.static(path.resolve('client', 'dist')));
 app.post('/', function (req, response) {

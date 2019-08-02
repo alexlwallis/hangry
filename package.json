@@ -6,9 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js --mode=development --watch",
+    "database": "tsc db/mongoDB.ts --outDir db/compiled",
     "api": "tsc server/apiData.ts --outDir server/compiled",
-    "server": "tsc server/apiData.ts --outDir server/compiled | tsc server/server.ts --outDir server/compiled | nodemon server/compiled/server.js",
-    "database": "tsc db/mongoDB.ts | node db/mongoDB.js"
+    "server": "tsc server/server.ts --outDir server/compiled | nodemon server/compiled/server/server.js"
   },
   "keywords": [],
   "author": "",
