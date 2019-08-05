@@ -4,6 +4,7 @@ import Axios, * as axios from 'axios';
 import Potentials from './components/Potentials'
 import FormAndData from './components/FormAndData'
 import RestaurantList from './components/RestaurantList';
+import Nutriton from './components/Nutrition';
 
 type MyState = {
    latitude: Number,
@@ -14,7 +15,8 @@ type MyState = {
    actualID: any,
    restaurantObj: Object,
    haveRestaurantList: Boolean,
-   ActualRestaurants: any
+   ActualRestaurants: any,
+   desiredCuisines: String
 }
 
 export default class App extends React.Component<{}, MyState> {
@@ -29,7 +31,8 @@ export default class App extends React.Component<{}, MyState> {
       actualID: 0,
       restaurantObj: {},
       haveRestaurantList: false,
-      ActualRestaurants: {}
+      ActualRestaurants: {},
+      desiredCuisines: ''
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
@@ -48,6 +51,7 @@ export default class App extends React.Component<{}, MyState> {
 
   componentDidMount(){
     this.geo();
+
   }
 
   geo(){
@@ -256,15 +260,16 @@ export default class App extends React.Component<{}, MyState> {
     return answer
   }
 
-  desiredCuisine(val:any){
-    console.log('desiredCuisine:  ',val);
+  desiredCuisine(val?:any):void{
+    // this.setState({
+    //   desiredCuisines: JSON.stringify(val)
+    // })
   }
 
   render() {
     //We check if needsBox is true, if it is then we start w/ a form and text box.
 
     //Need to make the input button clickable only when restaurantObj is populated.
-
     return (
       <div>
         {this.state.needsBox ?
@@ -280,7 +285,6 @@ export default class App extends React.Component<{}, MyState> {
             <Potentials locations={(this.state.possibleLocations)} child={this.childData}/>
           </div>
         : null}
-
         {this.state.restaurantObj ?
           <FormAndData restaurants={this.state.restaurantObj} child={this.FormAndDataToApp}/>
           :null}

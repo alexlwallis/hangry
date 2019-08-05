@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+import Nutrition from './Nutrition';
+
 type myProps = {
   list: any,
   child: any //Need to pass data back to parent;
@@ -7,13 +9,17 @@ type myProps = {
 
 type myState = {
   nonDuplicates: any,
+  wantsNutrition: Boolean,
+  desiredCuisines: any
 }
 
 export default class RestaurantList extends React.Component<myProps, myState>{
   constructor(props:any){
     super(props)
     this.state = {
-      nonDuplicates: []
+      nonDuplicates: [],
+      wantsNutrition: false,
+      desiredCuisines: ''
     }
     this.revealNames = this.revealNames.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -35,37 +41,47 @@ export default class RestaurantList extends React.Component<myProps, myState>{
   }
 
   handleClick(e:any):void{
+    this.setState({
+      wantsNutrition: true
+    })
     let restaurantAddress = (e.target.parentNode.childNodes[0].innerText).slice(9,);
+    let arrayOfPotentialCuisines = [];
     for (let obj in this.state.nonDuplicates){
       if (this.state.nonDuplicates[obj][0] === restaurantAddress){
-        this.props.child(this.state.nonDuplicates[obj][1])
+        arrayOfPotentialCuisines.push(this.state.nonDuplicates[obj][1])
       }
     }
+    this.setState({
+      desiredCuisines: JSON.stringify(arrayOfPotentialCuisines)
+    })
   }
 
 
   render(){
     return (
-      this.state.nonDuplicates.map((item:Array<String>) => {
+      this.state.nonDuplicates.map((item:Array<String>,  i:any) => {
         return (
           <div>
-            <h3>{item[7]}</h3>
+            <h3 id={i}>{item[7]}</h3>
             <ul>
-                <li>Address:  {item[0]}</li>
+                <li id={i}>Address:  {item[0]}</li>
               {Number(item[2]) > 0 ?
-                <li>Estimated price per person: ${Number(item[2])/2}</li>
+                <li id={i}>Estimated price per person: ${Number(item[2])/2}</li>
               :null}
-                <li>Telephone Number: {item[4]}</li>
-                <li>Opening Hours: {item[5]}</li>
-                <li>Ratings: {item[3]}/5</li>
+                <li id={i}>Telephone Number: {item[4]}</li>
+                <li id={i}>Opening Hours: {item[5]}</li>
+                <li id={i}>Ratings: {item[3]}/5</li>
               {item[6] === 'Fine Dining' ?
-                <li>Fine Dining</li>
-              : <li>Casual Atmosphere</li>}
+                <li id={i}>Fine Dining</li>
+              : <li id={i}>Casual Atmosphere</li>}
               {item[10] ?
-                <li>Distance from you: {item[10]} miles</li>
+                <li id={i}> Distance from you: {item[10]} miles</li>
               :null}
-              <p onClick={this.handleClick}>Want estimated nutrional facts?</p>
             </ul>
+            <p onClick={this.handleClick}>Want estimated nutrional facts?</p>
+            {this.state.wantsNutrition === true ?
+              <Nutrition potentialCuisines={this.state.desiredCuisines}/>
+            :null}
           </div>
         )
       })
