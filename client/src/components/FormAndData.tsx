@@ -72,7 +72,8 @@ export default class FormAndData extends Component<mProps, mState>{
     })
     let priceAdjusted:Array<String> = [];
     for (let obj in this.props.restaurants){
-      if (this.state.priceRange >= (this.props.restaurants[obj][2])){
+      //In api the restaurant pricing is for 2. So need to halve it.
+      if (this.state.priceRange >= (this.props.restaurants[obj][2]/2)){
         priceAdjusted.push(this.props.restaurants[obj])
       }
     }
@@ -206,7 +207,7 @@ export default class FormAndData extends Component<mProps, mState>{
         <label>What sort of food do you want?</label>
         <input onChange={this.cuisineInput} type="text"></input>
         <br></br>
-        <label>Max price you would spend for 2 people?</label>
+        <label>How much would you spend for one person?</label>
         <input onChange={this.priceRange} type="number" />
         <br></br>
         <label>Level of formality?</label>

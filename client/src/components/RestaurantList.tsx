@@ -10,7 +10,8 @@ type myProps = {
 type myState = {
   nonDuplicates: any,
   wantsNutrition: Boolean,
-  desiredCuisines: any
+  desiredCuisines: any,
+  whichRestaurant: any
 }
 
 export default class RestaurantList extends React.Component<myProps, myState>{
@@ -19,7 +20,8 @@ export default class RestaurantList extends React.Component<myProps, myState>{
     this.state = {
       nonDuplicates: [],
       wantsNutrition: false,
-      desiredCuisines: ''
+      desiredCuisines: '',
+      whichRestaurant: ''
     }
     this.revealNames = this.revealNames.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -44,16 +46,20 @@ export default class RestaurantList extends React.Component<myProps, myState>{
     this.setState({
       wantsNutrition: true
     })
-    let restaurantAddress = (e.target.parentNode.childNodes[0].innerText).slice(9,);
+    let restaurantAddress = (e.target.parentNode.childNodes[1].childNodes[0].innerText).slice(9,);
     let arrayOfPotentialCuisines = [];
     for (let obj in this.state.nonDuplicates){
       if (this.state.nonDuplicates[obj][0] === restaurantAddress){
+        //console.log(this.state.nonDuplicates[obj][1])
         arrayOfPotentialCuisines.push(this.state.nonDuplicates[obj][1])
       }
     }
+    // console.log('arrayOfPotentialCuisines: ',arrayOfPotentialCuisines);
     this.setState({
-      desiredCuisines: JSON.stringify(arrayOfPotentialCuisines)
+      desiredCuisines: (arrayOfPotentialCuisines),
+      whichRestaurant: restaurantAddress
     })
+
   }
 
 
@@ -62,25 +68,27 @@ export default class RestaurantList extends React.Component<myProps, myState>{
       this.state.nonDuplicates.map((item:Array<String>,  i:any) => {
         return (
           <div>
-            <h3 id={i}>{item[7]}</h3>
+            <h3>{item[7]}</h3>
             <ul>
-                <li id={i}>Address:  {item[0]}</li>
+                <li>Address:  {item[0]}</li>
               {Number(item[2]) > 0 ?
-                <li id={i}>Estimated price per person: ${Number(item[2])/2}</li>
+                <li>Estimated price per person: ${Number(item[2])/2}</li>
               :null}
-                <li id={i}>Telephone Number: {item[4]}</li>
-                <li id={i}>Opening Hours: {item[5]}</li>
-                <li id={i}>Ratings: {item[3]}/5</li>
+                <li>Telephone Number: {item[4]}</li>
+                <li>Opening Hours: {item[5]}</li>
+                <li>Ratings: {item[3]}/5</li>
               {item[6] === 'Fine Dining' ?
-                <li id={i}>Fine Dining</li>
-              : <li id={i}>Casual Atmosphere</li>}
+                <li>Fine Dining</li>
+              : <li>Casual Atmosphere</li>}
               {item[10] ?
-                <li id={i}> Distance from you: {item[10]} miles</li>
+                <li> Distance from you: {item[10]} miles</li>
               :null}
             </ul>
             <p onClick={this.handleClick}>Want estimated nutrional facts?</p>
-            {this.state.wantsNutrition === true ?
-              <Nutrition potentialCuisines={this.state.desiredCuisines}/>
+
+            {/* Matches the clicked <p>'s address with the iterated nonDup map */}
+            {(item[0] === this.state.whichRestaurant) ?
+              <Nutrition potentialCuisines={this.state.desiredCuisines} whichRestaurant={i}/>
             :null}
           </div>
         )

@@ -20,17 +20,17 @@ let American = {American: [{
   Burger: 800,
   Cheeseburger: 950,
   Fries: 400,
-  mediumSoda: 200,
-  smallSoda: 150,
-  largeSoda: 300,
-  oneWing: 100,
-  grilledCheese: 370,
-  hotDog: 400,
-  applePieSlice: 350,
-  cobbSalad: 470,
-  caesarSalad: 300,
-  Ribs4oz: 300,
-  Steak4oz: 215
+  "Medium Soda": 200,
+  "Small Soda": 150,
+  "Large Soda": 300,
+  "One Buffalo Wing": 100,
+  "Grilled Cheese": 370,
+  "Hot Dog": 400,
+  "Slice of Apple Pie": 350,
+  "Cobb Salad": 470,
+  "Caesar Salad": 300,
+  "4 ounces of Ribs": 300,
+  "4 ounce Steak": 215
 }]}
 
 

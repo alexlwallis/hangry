@@ -167,7 +167,6 @@ export default class App extends React.Component<{}, MyState> {
         x[val[i][7]] = val[i]
       }
     }
-    console.log('val!!!:', x)
     this.setState({
       ActualRestaurants: x
     },() => {
