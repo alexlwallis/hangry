@@ -109,17 +109,35 @@ export default class FormAndData extends Component<mProps, mState>{
 
   grouping(pAndF:Array<String>){
     let foodGroups:any = {
-      'American': ['american', 'burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings', 'burger',],
-      'Mexican': ['burritos', 'tacos', 'quesadillas', 'chile con carne', 'mexican', 'burrito'],
+      'American': ['american', 'new american','burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings', 'burger',],
+      'Mexican': ['burritos', 'tacos', 'quesadillas', 'chile con carne', 'mexican', 'burrito', 'taqueria'],
       'Breakfast': ['eggs', 'pancakes', 'waffles', ],
       'Pizza': ['pizza', 'italian', 'lasagna', 'pizzeria'],
       getDiner: function() {return [this.Breakfast,this.American,'diner', 'burgers', 'fries'].flat()},
-      'Japanese': ['japanese', 'sushi', 'bento box', 'ramen'],
-      'Indian': ['indian', 'pakistani', 'tikka masala', 'naan'],
-      'Ice Cream': ['dessert', 'ice cream', 'cake', 'Dessert Parlour'],
+      'Japanese': ['japanese', 'sushi', 'bento box', 'ramen', 'noodles', 'asian'],
+      'Indian': ['indian', 'pakistani', 'tikka masala', 'naan', 'asian'],
+      'Ice Cream': ['dessert', 'ice cream', 'cake', 'dessert parlour', 'frozen yogurt'],
       getSpanish: function() {return [this.Mexican,'paella','spanish'].flat()},
       'Korean': ['korean', 'kbbq'],
-      getMed: function(){return [this.Pizza,'mediterranean', 'greek', 'italian'].flat()}
+      'Coffee': ['cafe', 'coffee', 'tea', 'latte', 'mocha', 'cafe, coffee and tea'],
+      'Fast Food': ['fast food', 'burgers'],
+      'Burmese': ['burma', 'burmese'],
+      'Sandwich': ['sandwich', 'deli'],
+      'Vietnamese': ['vietnamese', 'pho'],
+      'Cuban': ['cuban'],
+      'Hawaiian': ['hawaiian'],
+      'German': ['german', 'bratwurst', 'currywurst', 'schnitzel'],
+      'Thai': ['thai', 'pad thai'],
+      'Donuts': ['donuts', 'doughnuts'],
+      'Greek': ['greek', 'yogurt', 'moussaka', 'souvlaki', 'mediterranean'],
+      'Bakery': ['bakery', 'patisserie', 'pastries', 'bread'],
+      'Seafood': ['seafood', 'fish', 'salmon', 'crab', 'lobster'],
+      'French': ['french', 'coq au vin', 'french onion soup'],
+      'Afghan': ['afghan', 'afghanistani', 'kebab', 'naan'],
+      'Turkish': ['turkish', 'baklava', 'menemen', 'yogurt', 'manti', 'shish kebab', 'kebab', 'turkish coffee'],
+      'Moroccan': ['moroccan', 'couscous', 'tagine', 'zaalouk'],
+      'Chinese': ['chinese', 'cantonese','dim sum', 'egg rolls', 'noodles', 'sweet and sour pork', 'kung pao chicken', 'chow mein', 'duck', 'asian'],
+      getMed: function(){return [this.Pizza,'mediterranean', 'greek', 'italian', 'turkish'].flat()}
     }
 
     let sanitizeInput = this.state.typeOfCuisine.toLowerCase();
