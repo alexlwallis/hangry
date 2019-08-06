@@ -162,6 +162,7 @@ export default class FormAndData extends Component<mProps, mState>{
           emptyArr.push('Not found :\'(');
         }
       }
+      console.log('emptyArray: ',emptyArr);
       return emptyArr;
     }
 
