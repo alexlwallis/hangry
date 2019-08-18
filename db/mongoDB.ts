@@ -78,7 +78,9 @@ db.collection('cuisineDB').deleteMany({}, (err:any) => {
   } else {
     db.collection('cuisineDB').insertOne(cuisines, (err:any, res:any) => {
       if (err) {throw err}
-      else {console.log('dbCollection: ',res.ops[0])};
+      else {
+        //console.log('dbCollection: ',res.ops[0])
+      }
     })
   }
 })

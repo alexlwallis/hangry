@@ -71,10 +71,12 @@ export default class FormAndData extends Component<mProps, mState>{
       formAnswered: true
     })
     let priceAdjusted:Array<String> = [];
-    for (let obj in this.props.restaurants){
-      //In api the restaurant pricing is for 2. So need to halve it.
-      if (this.state.priceRange >= (this.props.restaurants[obj][2]/2)){
-        priceAdjusted.push(this.props.restaurants[obj])
+    if (this.props.restaurants.length > 0) {
+      for (let obj in this.props.restaurants){
+        //In api the restaurant pricing is for 2. So need to halve it.
+        if (this.state.priceRange >= (this.props.restaurants[obj][2]/2)){
+          priceAdjusted.push(this.props.restaurants[obj])
+        }
       }
     }
     let priceAndFormality:Array<String> = [];
@@ -103,7 +105,6 @@ export default class FormAndData extends Component<mProps, mState>{
     // console.log(Object.keys(this.props.restaurants));
     console.log('priceAndFormality: ',priceAndFormality)
     this.grouping(priceAndFormality); //Restaurants that match price/formality level
-
   }
 
 
@@ -236,7 +237,6 @@ export default class FormAndData extends Component<mProps, mState>{
         <br/>
         <button onClick={this.answeredQuestions}>Submit</button>
       </div>
-      : null //<Sorting restaurants={this.props.restaurants} />
-    )
+      : null) //<Sorting restaurants={this.props.restaurants} />
   }
 }

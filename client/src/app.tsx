@@ -16,7 +16,8 @@ type MyState = {
    restaurantObj: Object,
    haveRestaurantList: Boolean,
    ActualRestaurants: any,
-   desiredCuisines: String
+   desiredCuisines: String,
+   validLocation: Boolean,
 }
 
 export default class App extends React.Component<{}, MyState> {
@@ -32,7 +33,8 @@ export default class App extends React.Component<{}, MyState> {
       restaurantObj: {},
       haveRestaurantList: false,
       ActualRestaurants: {},
-      desiredCuisines: ''
+      desiredCuisines: '',
+      validLocation: true,
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
@@ -98,12 +100,22 @@ export default class App extends React.Component<{}, MyState> {
       return res.json();
     })
     .then((json: Array<Object>) => {
-      let obj = Object.assign({}, json[0], json[1], json[2], json[3], json[4])
-      //For whatever reason it doesn't want to give 100 restaurants back - gives around ~95
-      this.setState({
-        restaurantObj: obj,
-        haveRestaurantList: true
-      })
+      console.log('json: ', json)
+      //If no restaurants are sent back because location cannot be found.
+      if (json.length === 0){
+        this.setState({
+          restaurantObj: [],
+          validLocation: false,
+          needsBox: true
+        })
+      } else {
+        let obj = Object.assign({}, json[0], json[1], json[2], json[3], json[4])
+        //For whatever reason it doesn't want to give 100 restaurants back - gives around ~95
+        this.setState({
+          restaurantObj: obj,
+          haveRestaurantList: true
+        })
+      }
     })
     .catch((err:any) => {
       console.error(err);
@@ -276,7 +288,8 @@ export default class App extends React.Component<{}, MyState> {
                 Location: <input type="text" onChange={this.changeCity}/> <br />
                 <input type="submit" />
             </form>
-          : null}
+        : null}
+
         {this.state.possibleLocations.length > 0 ?
           <div>
             <h1>We think you live in...</h1>
@@ -284,13 +297,21 @@ export default class App extends React.Component<{}, MyState> {
             <Potentials locations={(this.state.possibleLocations)} child={this.childData}/>
           </div>
         : null}
-        {this.state.restaurantObj ?
-          <FormAndData restaurants={this.state.restaurantObj} child={this.FormAndDataToApp}/>
+
+
+          {this.state.validLocation ?
+
+            this.state.restaurantObj ?
+              <FormAndData restaurants={this.state.restaurantObj} child={this.FormAndDataToApp}/>
+            :null
+
           :null}
-        {/* Only way I could  */}
-        {Object.keys(this.state.ActualRestaurants).length > 0 ?
-          <RestaurantList list={this.state.ActualRestaurants} child={this.desiredCuisine}/>
-        :null}
+          {/* Only way I could  */}
+          {this.state.validLocation ?
+            Object.keys(this.state.ActualRestaurants).length > 0 ?
+              <RestaurantList list={this.state.ActualRestaurants} child={this.desiredCuisine}/>
+            :null
+          : <p>Not a valid location, use the location query above.</p>}
       </div>
     )
   }

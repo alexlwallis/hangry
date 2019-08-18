@@ -9,8 +9,40 @@ var keyPath = path.resolve('key.json');
 let key = require(keyPath).key
 const axios = require("axios");
 
+
+export async function validLocation(lat:String, lon:String, cb:Function){
+  type parameters = {
+    lat: String,
+    lon: String,
+  }
+
+  const parameters = {
+    lat: lat,
+    lon: lon
+  }
+
+  await axios.get('https://developers.zomato.com/api/v2.1/geocode', {
+    params: parameters,
+    headers: {
+      'user-key': key,
+      'Accept':'application/json'
+    }
+  })
+  .then((res:any) => {
+    console.log("validLocation; ", res);
+    cb(res);
+  })
+  .catch((err:any) => {
+    cb(err.isAxiosError)
+  })
+}
+
 export async function retrieveData(lat: String, lon:String, start:Number, count:Number, cb: Function){
   //Change count to 20 later.
+
+  // validLocation(lat, lon, (e:any)=>console.log('validLocation: ',e))
+
+  console.log('here retrieveData')
   type parameters = {
     lat: String,
     lon: String,
@@ -36,7 +68,7 @@ export async function retrieveData(lat: String, lon:String, start:Number, count:
   .then((res: any) => {
     //For some reason if I set necessaryData to Object it wont let me add a key to it a la necessaryData.key
     //future reading => https://stackoverflow.com/questions/32968332/how-do-i-prevent-the-error-index-signature-of-object-type-implicitly-has-an-an
-    //console.log('retrieveData: ', res)
+    //res.data.restaurants.map((item:any) => console.log(item.restaurant.location.country_id))
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
@@ -49,6 +81,8 @@ export async function retrieveData(lat: String, lon:String, start:Number, count:
 }
 
 export async function chosenPlaceToRestaurants(id:string, start:Number, count:Number, cb:Function){
+  console.log('here chosenPlaceToRestaurants')
+
   type param = {
     entity_id: string,
     entity_type: string,
@@ -84,6 +118,8 @@ export async function chosenPlaceToRestaurants(id:string, start:Number, count:Nu
 
 
 export function locationToCoords(q: string, cb:Function){
+  console.log('here locationToCoords')
+
   type parameters = {
     q: String
   }

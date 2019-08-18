@@ -60,20 +60,28 @@ app.post('/', (req: any, response:any) => {
     })
   } else {
     //Geolocation
+    console.log('here geolcation?')
     let x = cityOrCoordsOrId.split(',')
-    let start = 0;
-    let count = 19;
-    let longArrayOfRestaurants:any = [];
-    while (count <= 100) {
-      api.retrieveData(x[0], x[1], start, count,((results:any) => {
-        longArrayOfRestaurants.push(results)
-        if (longArrayOfRestaurants.length === 5){
-          response.status(200).send(longArrayOfRestaurants)
+    api.validLocation(x[0], x[1], (res:any) => {
+      let longArrayOfRestaurants:any = [];
+      if (res != true) {
+        let start = 0;
+        let count = 19;
+        while (count <= 100) {
+          api.retrieveData(x[0], x[1], start, count,((results:any) => {
+            longArrayOfRestaurants.push(results)
+            if (longArrayOfRestaurants.length === 5){
+              response.status(200).send(longArrayOfRestaurants)
+            }
+          }))
+          start = start + 20;
+          count = count + 20;
         }
-      }))
-      start = start + 20;
-      count = count + 20;
-    }
+      } else {
+        console.log("Your location cannot be found.")
+        response.status(200).send(longArrayOfRestaurants)
+      }
+    })
   }
 });
 

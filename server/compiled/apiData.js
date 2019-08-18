@@ -43,12 +43,46 @@ var fetch = require('node-fetch');
 var keyPath = path.resolve('key.json');
 var key = require(keyPath).key;
 var axios = require("axios");
+function validLocation(lat, lon, cb) {
+    return __awaiter(this, void 0, void 0, function () {
+        var parameters;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    parameters = {
+                        lat: lat,
+                        lon: lon
+                    };
+                    return [4 /*yield*/, axios.get('https://developers.zomato.com/api/v2.1/geocode', {
+                            params: parameters,
+                            headers: {
+                                'user-key': key,
+                                'Accept': 'application/json'
+                            }
+                        })
+                            .then(function (res) {
+                            console.log("validLocation; ", res);
+                            cb(res);
+                        })["catch"](function (err) {
+                            cb(err.isAxiosError);
+                        })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.validLocation = validLocation;
 function retrieveData(lat, lon, start, count, cb) {
     return __awaiter(this, void 0, void 0, function () {
         var parameters;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    //Change count to 20 later.
+                    // validLocation(lat, lon, (e:any)=>console.log('validLocation: ',e))
+                    console.log('here retrieveData');
                     parameters = {
                         lat: lat,
                         lon: lon,
@@ -67,7 +101,7 @@ function retrieveData(lat, lon, start, count, cb) {
                             .then(function (res) {
                             //For some reason if I set necessaryData to Object it wont let me add a key to it a la necessaryData.key
                             //future reading => https://stackoverflow.com/questions/32968332/how-do-i-prevent-the-error-index-signature-of-object-type-implicitly-has-an-an
-                            //console.log('retrieveData: ', res)
+                            //res.data.restaurants.map((item:any) => console.log(item.restaurant.location.country_id))
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
@@ -92,6 +126,7 @@ function chosenPlaceToRestaurants(id, start, count, cb) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    console.log('here chosenPlaceToRestaurants');
                     param = {
                         entity_id: id,
                         entity_type: 'city',
@@ -124,6 +159,7 @@ function chosenPlaceToRestaurants(id, start, count, cb) {
 }
 exports.chosenPlaceToRestaurants = chosenPlaceToRestaurants;
 function locationToCoords(q, cb) {
+    console.log('here locationToCoords');
     var parameters = {
         q: q
     };
