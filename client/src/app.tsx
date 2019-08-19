@@ -12,12 +12,13 @@ type MyState = {
    needsBox: Boolean,
    location: string,
    possibleLocations: Array<String>,
-   actualID: any,
+   foundLocation: any,
    restaurantObj: Object,
    haveRestaurantList: Boolean,
    ActualRestaurants: any,
    desiredCuisines: String,
    validLocation: Boolean,
+   ableToFindLocation: String
 }
 
 export default class App extends React.Component<{}, MyState> {
@@ -29,12 +30,13 @@ export default class App extends React.Component<{}, MyState> {
       needsBox: false,
       location: '',
       possibleLocations: [],
-      actualID: 0,
+      foundLocation: false,
       restaurantObj: {},
       haveRestaurantList: false,
       ActualRestaurants: {},
       desiredCuisines: '',
       validLocation: true,
+      ableToFindLocation: ""
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
@@ -138,10 +140,22 @@ export default class App extends React.Component<{}, MyState> {
       return a.json();
     })
     .then((json: Object) => {
-      let convertedArray:any = this.objToArray(json);
-      this.setState({
-        possibleLocations: convertedArray,
-      })
+      console.log('handleSubmitJSON: ',json)
+      //If we can get a result when we search for the location
+      if (Object.keys(json).length > 0) {
+        console.log('Found possible locations.')
+        let convertedArray:any = this.objToArray(json);
+        this.setState({
+          possibleLocations: convertedArray
+        })
+      } else {
+        console.log("We can't find any locations.")
+        this.setState({
+          possibleLocations: [],
+          validLocation: false,
+          ableToFindLocation: "We can't find any locations."
+        })
+      }
     })
   }
 
@@ -166,19 +180,26 @@ export default class App extends React.Component<{}, MyState> {
     this.setState({
       //actualID: altered[Number(id)],
       //Setting possibleLocations to emptyArr gets rid of cities from DOM
-      possibleLocations: []
+      possibleLocations: ['sent data'],
+      validLocation: true,
+      ableToFindLocation: "yes"
     })
     this.sendingEntityId(altered[Number(id)]);
     //this.sendingEntityId(this.state.actualID)
   }
 
   FormAndDataToApp(val:any){
+    console.log('formAndDataToApp');
     let x:any = {}
+    console.log(val);
+
+    //Checks to see if any repeats with names.
     for (let i=0; i<val.length; i++){
       if (!x.hasOwnProperty(val[i][0])){
         x[val[i][7]] = val[i]
       }
     }
+    //Sets the state to non-repeat list.
     this.setState({
       ActualRestaurants: x
     },() => {
@@ -210,6 +231,8 @@ export default class App extends React.Component<{}, MyState> {
       console.log('Am I here?')
       let obj = Object.assign({}, json[0], json[1], json[2], json[3], json[4])
       this.setState({
+        validLocation: true,
+        ableToFindLocation: "yes",
         restaurantObj: obj,
         haveRestaurantList: true
       })
@@ -246,7 +269,8 @@ export default class App extends React.Component<{}, MyState> {
       for (let obj in this.state.ActualRestaurants){
         let lat = Number(this.state.ActualRestaurants[obj][8]);
         let lon = Number(this.state.ActualRestaurants[obj][9]);
-        this.state.ActualRestaurants[obj][10] = this.haversineFormula(latitude, longitude, lat, lon)
+        console.log(this.haversineFormula(latitude, longitude, lat, lon))
+        this.state.ActualRestaurants[obj][11] = this.haversineFormula(latitude, longitude, lat, lon)
       }
     }
     let updatedAR = this.state.ActualRestaurants;
@@ -272,9 +296,6 @@ export default class App extends React.Component<{}, MyState> {
   }
 
   desiredCuisine(val?:any):void{
-    // this.setState({
-    //   desiredCuisines: JSON.stringify(val)
-    // })
   }
 
   render() {
@@ -283,35 +304,43 @@ export default class App extends React.Component<{}, MyState> {
     //Need to make the input button clickable only when restaurantObj is populated.
     return (
       <div>
-        {this.state.needsBox ?
+        {this.state.needsBox && this.state.possibleLocations[0] != "sent data" ?
             <form onSubmit={this.handleSubmit} >
-                Location: <input type="text" onChange={this.changeCity}/> <br />
+                Location: <br></br>
+                <input type="text" onChange={this.changeCity}/>
+                 <br></br>
                 <input type="submit" />
             </form>
         : null}
 
-        {this.state.possibleLocations.length > 0 ?
+        {!this.state.validLocation && this.state.possibleLocations.length === 0 ?  <p>We couldn't find a likely location, try a big city near you or be more specific.</p> :null}
+
+        {this.state.possibleLocations.length > 0 && this.state.possibleLocations[0] != "sent data" ?
           <div>
             <h1>We think you live in...</h1>
             <h3>Click your location</h3>
-            <Potentials locations={(this.state.possibleLocations)} child={this.childData}/>
+            <Potentials locations={(this.state.possibleLocations)} validLocation = {this.state.validLocation} child={this.childData}/>
+            <p>If you can't find what you're looking for try another query.</p>
           </div>
         : null}
 
 
-          {this.state.validLocation ?
+          {this.state.possibleLocations.length === 1 ?
 
             this.state.restaurantObj ?
               <FormAndData restaurants={this.state.restaurantObj} child={this.FormAndDataToApp}/>
             :null
 
           :null}
-          {/* Only way I could  */}
+
           {this.state.validLocation ?
+
+            /* Only way I could  */
             Object.keys(this.state.ActualRestaurants).length > 0 ?
               <RestaurantList list={this.state.ActualRestaurants} child={this.desiredCuisine}/>
             :null
-          : <p>Not a valid location, use the location query above.</p>}
+
+          : null}
       </div>
     )
   }

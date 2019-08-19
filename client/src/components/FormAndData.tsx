@@ -13,7 +13,8 @@ type mState = {
   priceRange: Number,
   fineDine: Boolean,
   casualDine: Boolean,
-  resOptions: Array<String>
+  resOptions: Array<String>,
+  inputError: String
 };
 
 
@@ -26,7 +27,8 @@ export default class FormAndData extends Component<mProps, mState>{
       priceRange: 0,
       fineDine: false,
       casualDine: false,
-      resOptions: []
+      resOptions: [],
+      inputError: ""
     }
     this.cuisineInput = this.cuisineInput.bind(this);
     this.priceRange = this.priceRange.bind(this);
@@ -34,20 +36,46 @@ export default class FormAndData extends Component<mProps, mState>{
     this.fineDining = this.fineDining.bind(this);
     this.answeredQuestions = this.answeredQuestions.bind(this);
     this.grouping = this.grouping.bind(this);
+    this.extractCuisineTypesFromProps = this.extractCuisineTypesFromProps.bind(this);
   }
 
+  //May want to consider putting in a dropdown menu w/ combination of
+  //cuisine types from possible location and from foodGroups object.
   cuisineInput(e:any){
     let cuisine = (e.target.value);
-    this.setState({
-      typeOfCuisine: cuisine
-    });
+
+    let wordCheckBoolean = (cuisine.match(/[a-zA-Z]/g) != null) && (cuisine.match(/[a-zA-Z]/g).length === cuisine.length)
+
+    if (wordCheckBoolean || cuisine === ""){
+      this.setState({
+        inputError: "",
+        typeOfCuisine: cuisine
+      });
+      //error handling
+    } else {
+      this.setState({
+        inputError: "Cuisine input must be an alphabetical word."
+      });
+    }
   }
 
   priceRange(e:any):void{
-    let price = Number(e.target.value);
-    this.setState({
-      priceRange: price
-    });
+    let price = (e.target.value);
+
+    let priceCheckBoolean = (price.match(/\d/g) != null) && (price.match(/\d/g).length === price.length)
+
+    console.log(price === 0);
+
+    if (priceCheckBoolean || price === ""){
+      this.setState({
+        priceRange: Number(price),
+        inputError: ""
+      });
+    } else {
+      this.setState({
+        inputError: "Must use only numbers for amount spent."
+      });
+    }
   }
 
   casualDining(e:any):void{
@@ -71,14 +99,13 @@ export default class FormAndData extends Component<mProps, mState>{
       formAnswered: true
     })
     let priceAdjusted:Array<String> = [];
-    if (this.props.restaurants.length > 0) {
       for (let obj in this.props.restaurants){
         //In api the restaurant pricing is for 2. So need to halve it.
         if (this.state.priceRange >= (this.props.restaurants[obj][2]/2)){
           priceAdjusted.push(this.props.restaurants[obj])
         }
       }
-    }
+
     let priceAndFormality:Array<String> = [];
     if (this.state.casualDine) {
       for (let obj in priceAdjusted){
@@ -105,6 +132,32 @@ export default class FormAndData extends Component<mProps, mState>{
     // console.log(Object.keys(this.props.restaurants));
     console.log('priceAndFormality: ',priceAndFormality)
     this.grouping(priceAndFormality); //Restaurants that match price/formality level
+  }
+
+  extractCuisineTypesFromProps(){
+    let allCuisineTypes = {};
+    for (let key in this.props.restaurants){
+      let cuisineString = this.props.restaurants[key][1];
+      let cuisineArray = cuisineString.split(",");
+      //console.log('cuisineArray: ', cuisineArray);
+      for (let i=0; i<cuisineArray.length; i++) {
+        
+      }
+    }
+    // this.props.restaurants.map((item:any) => {
+    //   let cuisineString = item[1];
+    //   let cuisineArray = cuisineString.split(",");
+    //   console.log('cuisineArray: ', cuisineArray)
+    //   cuisineArray.map((item:any) => {
+    //     console.log('mapped cuisine array: ',item);
+    //     // for (let key in allCuisineTypes){
+    //     //   if (!allCuisineTypes.hasOwnProperty(item)){
+    //     //     allCuisineTypes[item] =
+    //     //   }
+    //     // }
+    //   })
+    // });
+
   }
 
 
@@ -218,24 +271,44 @@ export default class FormAndData extends Component<mProps, mState>{
      *  the priceAndFormality array.
      */
 
+  errorStyle = {
+    "color":"red"
+  }
 
 
   render(){
     return(
       !this.state.formAnswered ?
       <div>
-        <label>What sort of food do you want?</label>
+        <label>Preferred Cuisine Type: </label> <br></br>
         <input onChange={this.cuisineInput} type="text"></input>
         <br></br>
-        <label>How much would you spend for one person?</label>
-        <input onChange={this.priceRange} type="number" />
+        {/* {this.state.inputError ?
+          <p style={this.errorStyle}>The cuisine must be a word.</p>
+        :null} */}
         <br></br>
-        <label>Level of formality?</label>
+        <label>Maximum Cost per Person:</label> <br></br>
+        <input onChange={this.priceRange} type="text" />
+        <br></br>
+        {/* {this.state.inputError ?
+          <p style={this.errorStyle}>The price must be a number.</p>
+        :null} */}
+        <br></br>
+        <label>Dining Formality</label>
         <br/>
-        <input onChange={this.casualDining} type="checkbox" value="Casual Dining"/><label>Casual Dining</label>
-        <input onChange={this.fineDining} type="checkbox" value="Fine Dining"/><label>Fine Dining</label>
+        <input onChange={this.casualDining} type="checkbox" value="Casual"/><label>Casual Dining</label>
+        <input onChange={this.fineDining} type="checkbox" value="Fine"/><label>Fine Dining</label>
+        {this.state.inputError ?
+          <p style={this.errorStyle}>{this.state.inputError}</p>
+        :null}
         <br/>
-        <button onClick={this.answeredQuestions}>Submit</button>
+        {Object.keys(this.props.restaurants).length > 0 ?
+          console.log(this.extractCuisineTypesFromProps())
+        :null}
+        {console.log('restaurant props len: ',Object.keys(this.props.restaurants).length)}
+        {!this.state.inputError && Object.keys(this.props.restaurants).length > 0 ?
+            <button onClick={this.answeredQuestions}>Find Suggested Restaurants</button>
+        :null}
       </div>
       : null) //<Sorting restaurants={this.props.restaurants} />
   }

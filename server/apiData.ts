@@ -72,7 +72,7 @@ export async function retrieveData(lat: String, lon:String, start:Number, count:
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
-      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude]
+      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude, item.restaurant.currency]
       necessaryData[key] = interestingData;
     })
     cb(necessaryData)
@@ -103,13 +103,14 @@ export async function chosenPlaceToRestaurants(id:string, start:Number, count:Nu
     }
   })
   .then((res: any) => {
+    //res.data.restaurants.forEach((element:any) => console.log(element.restaurant.currency));
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
-      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude]
+      let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude, item.restaurant.currency]
       necessaryData[key] = interestingData;
     })
-    console.log('necessaryData: ~~~~~~~~',necessaryData)
+    //console.log('necessaryData: ~~~~~~~~',necessaryData)
     cb(necessaryData)
   })
   .catch((err:any) => {console.error(err)});

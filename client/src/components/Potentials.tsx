@@ -3,7 +3,8 @@ import { Component } from "react";
 
 type Props = {
   locations: any
-  child: any
+  child: any,
+  validLocation: Boolean
 }
 
 type State = {
@@ -63,13 +64,17 @@ export default class Potentials extends Component<Props, State>{
 
   render(){
     return (
-      this.state.cleanLocations.map((item:any, i:any) => {
-        return (
-          <div>
-            <p onClick={this.handleClick} key={i} id={i}>{item}</p>
-          </div>
-        )
-      })
+      <div>
+      {(this.props.validLocation || this.props.locations.length > 0) ?
+        this.state.cleanLocations.map((item:any, i:any) => {
+          return (
+            <div>
+              <button onClick={this.handleClick} key={i} id={i}>{item}</button>
+            </div>
+          )
+        })
+      :<p>Not valid location?</p>}
+    </div>
     )
   }
 }

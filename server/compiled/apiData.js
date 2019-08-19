@@ -105,7 +105,7 @@ function retrieveData(lat, lon, start, count, cb) {
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
-                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude];
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude, item.restaurant.currency];
                                 necessaryData[key] = interestingData;
                             });
                             cb(necessaryData);
@@ -141,13 +141,14 @@ function chosenPlaceToRestaurants(id, start, count, cb) {
                             }
                         })
                             .then(function (res) {
+                            //res.data.restaurants.forEach((element:any) => console.log(element.restaurant.currency));
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
-                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude];
+                                var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude, item.restaurant.currency];
                                 necessaryData[key] = interestingData;
                             });
-                            console.log('necessaryData: ~~~~~~~~', necessaryData);
+                            //console.log('necessaryData: ~~~~~~~~',necessaryData)
                             cb(necessaryData);
                         })["catch"](function (err) { console.error(err); })];
                 case 1:

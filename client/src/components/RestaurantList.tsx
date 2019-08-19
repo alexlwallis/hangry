@@ -72,7 +72,7 @@ export default class RestaurantList extends React.Component<myProps, myState>{
             <ul>
                 <li>Address:  {item[0]}</li>
               {Number(item[2]) > 0 ?
-                <li>Estimated price per person: ${Number(item[2])/2}</li>
+                <li>Estimated price per person: {item[10]} {Number(item[2])/2}</li>
               :null}
                 <li>Telephone Number: {item[4]}</li>
                 <li>Opening Hours: {item[5]}</li>
@@ -80,8 +80,8 @@ export default class RestaurantList extends React.Component<myProps, myState>{
               {item[6] === 'Fine Dining' ?
                 <li>Fine Dining</li>
               : <li>Casual Atmosphere</li>}
-              {item[10] ?
-                <li> Distance from you: {item[10]} miles</li>
+              {item[11] ?
+                <li> Distance from you: {item[11]} miles</li>
               :null}
             </ul>
             <p onClick={this.handleClick}>Want estimated nutrional facts?</p>
