@@ -14,7 +14,10 @@ type mState = {
   fineDine: Boolean,
   casualDine: Boolean,
   resOptions: Array<String>,
-  inputError: String
+  inputError: String,
+  cuisineDropDown: Array<String>,
+  hasReceievedCuisineDropD: Boolean,
+  propsCuisine: Array<String>
 };
 
 
@@ -28,7 +31,10 @@ export default class FormAndData extends Component<mProps, mState>{
       fineDine: false,
       casualDine: false,
       resOptions: [],
-      inputError: ""
+      inputError: "",
+      cuisineDropDown: [],
+      hasReceievedCuisineDropD: false,
+      propsCuisine: []
     }
     this.cuisineInput = this.cuisineInput.bind(this);
     this.priceRange = this.priceRange.bind(this);
@@ -37,12 +43,28 @@ export default class FormAndData extends Component<mProps, mState>{
     this.answeredQuestions = this.answeredQuestions.bind(this);
     this.grouping = this.grouping.bind(this);
     this.extractCuisineTypesFromProps = this.extractCuisineTypesFromProps.bind(this);
+    this.elementsOfFoodGroups = this.elementsOfFoodGroups.bind(this);
+    this.matchPropsAndFG = this.matchPropsAndFG.bind(this);
   }
 
   //May want to consider putting in a dropdown menu w/ combination of
   //cuisine types from possible location and from foodGroups object.
+  componentWillUpdate(){
+    //If components has ran and we've got the props to go
+    //without the if it'll just run recursively.
+    if (!this.state.hasReceievedCuisineDropD){
+      this.matchPropsAndFG();
+    }
+  }
+
+
   cuisineInput(e:any){
+
+    console.log('e: ',e);
+
     let cuisine = (e.target.value);
+
+    console.log('cuisine: ', cuisine);
 
     let wordCheckBoolean = (cuisine.match(/[a-zA-Z]/g) != null) && (cuisine.match(/[a-zA-Z]/g).length === cuisine.length)
 
@@ -79,7 +101,8 @@ export default class FormAndData extends Component<mProps, mState>{
   }
 
   casualDining(e:any):void{
-    if (e.target.value === 'Casual Dining') {
+    console.log('e.target.value: ', e.target.value);
+    if (e.target.value === 'Casual') {
       this.setState({
         casualDine: true
       })
@@ -87,7 +110,9 @@ export default class FormAndData extends Component<mProps, mState>{
   }
 
   fineDining(e:any):void{
-    if (e.target.value === 'Fine Dining') {
+    console.log('e.target.value: ', e.target.value);
+
+    if (e.target.value === 'Fine') {
       this.setState({
         fineDine: true
       })
@@ -122,48 +147,16 @@ export default class FormAndData extends Component<mProps, mState>{
       }
     }
 
-    for (let i=0; i<this.props.restaurants.length; i++) {
-      //console.log('xx: ',this.props.restaurants[i])
-    }
-    // for (let i=0; i<priceAndFormality.length; i++) {
-    //   console.log(priceAndFormality[i][0])
-    // }
+    console.log('answeredQs: ',priceAndFormality,"\n",priceAdjusted,"\n", this.props.restaurants);
 
     // console.log(Object.keys(this.props.restaurants));
     console.log('priceAndFormality: ',priceAndFormality)
     this.grouping(priceAndFormality); //Restaurants that match price/formality level
   }
 
-  extractCuisineTypesFromProps(){
-    let allCuisineTypes = {};
-    for (let key in this.props.restaurants){
-      let cuisineString = this.props.restaurants[key][1];
-      let cuisineArray = cuisineString.split(",");
-      //console.log('cuisineArray: ', cuisineArray);
-      for (let i=0; i<cuisineArray.length; i++) {
-        
-      }
-    }
-    // this.props.restaurants.map((item:any) => {
-    //   let cuisineString = item[1];
-    //   let cuisineArray = cuisineString.split(",");
-    //   console.log('cuisineArray: ', cuisineArray)
-    //   cuisineArray.map((item:any) => {
-    //     console.log('mapped cuisine array: ',item);
-    //     // for (let key in allCuisineTypes){
-    //     //   if (!allCuisineTypes.hasOwnProperty(item)){
-    //     //     allCuisineTypes[item] =
-    //     //   }
-    //     // }
-    //   })
-    // });
-
-  }
-
-
-  grouping(pAndF:Array<String>){
+  elementsOfFoodGroups():Array<String>{
     let foodGroups:any = {
-      'American': ['american', 'new american','burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings', 'burger',],
+      'American': ['american', 'new american','burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings', 'burger', "steak", "bbq"],
       'Mexican': ['burritos', 'tacos', 'quesadillas', 'chile con carne', 'mexican', 'burrito', 'taqueria'],
       'Breakfast': ['eggs', 'pancakes', 'waffles', ],
       'Pizza': ['pizza', 'italian', 'lasagna', 'pizzeria'],
@@ -171,31 +164,130 @@ export default class FormAndData extends Component<mProps, mState>{
       'Japanese': ['japanese', 'sushi', 'bento box', 'ramen', 'noodles', 'asian'],
       'Indian': ['indian', 'pakistani', 'tikka masala', 'naan', 'asian'],
       'Ice Cream': ['dessert', 'ice cream', 'cake', 'dessert parlour', 'frozen yogurt'],
-      getSpanish: function() {return [this.Mexican,'paella','spanish'].flat()},
+      getSpanish: function() {return [this.Mexican,'paella','spanish', 'tapas'].flat()},
       'Korean': ['korean', 'kbbq'],
-      'Coffee': ['cafe', 'coffee', 'tea', 'latte', 'mocha', 'cafe, coffee and tea'],
+      'Coffee': ['cafe', 'coffee', 'tea', 'latte', 'mocha', 'cafe, coffee and tea', 'sandwich'],
       'Fast Food': ['fast food', 'burgers'],
-      'Burmese': ['burma', 'burmese'],
+      'Burmese': ['burma', 'burmese', 'asian'],
       'Sandwich': ['sandwich', 'deli'],
-      'Vietnamese': ['vietnamese', 'pho'],
+      'Vietnamese': ['vietnamese', 'pho', 'asian'],
       'Cuban': ['cuban'],
+      'Lebanese': ['lebanese'],
+      'Juices': ['juices'],
+      'European': ['modern european', 'european'],
+      'Pub Food': ['pub food'],
+      'Grill': ['grill'],
+      'Healthy Food': ['healthy food'],
+      'Irish': ['irish','colcannon', 'full irish breakfast', 'soda bread', 'irish stew', 'fish and chips'],
       'Hawaiian': ['hawaiian'],
+      'Mongolian': ['mongolian'],
+      'African': ['african'],
       'German': ['german', 'bratwurst', 'currywurst', 'schnitzel'],
-      'Thai': ['thai', 'pad thai'],
+      'Thai': ['thai', 'pad thai', 'asian'],
       'Donuts': ['donuts', 'doughnuts'],
       'Greek': ['greek', 'yogurt', 'moussaka', 'souvlaki', 'mediterranean'],
-      'Bakery': ['bakery', 'patisserie', 'pastries', 'bread'],
+      'Bakery': ['bakery', 'patisserie', 'pastries', 'bread', 'sandwich'],
       'Seafood': ['seafood', 'fish', 'salmon', 'crab', 'lobster'],
       'French': ['french', 'coq au vin', 'french onion soup'],
       'Afghan': ['afghan', 'afghanistani', 'kebab', 'naan'],
       'Turkish': ['turkish', 'baklava', 'menemen', 'yogurt', 'manti', 'shish kebab', 'kebab', 'turkish coffee'],
       'Moroccan': ['moroccan', 'couscous', 'tagine', 'zaalouk'],
-      'Chinese': ['chinese', 'cantonese','dim sum', 'egg rolls', 'noodles', 'sweet and sour pork', 'kung pao chicken', 'chow mein', 'duck', 'asian'],
+      'Chinese': ['asian','chinese', 'cantonese','dim sum', 'egg rolls', 'noodles', 'sweet and sour pork', 'kung pao chicken', 'chow mein', 'duck', 'asian'],
+      getMed: function(){return [this.Pizza,'mediterranean', 'greek', 'italian', 'turkish'].flat()}
+    }
+    let emptyArr:any = []
+    for (let prop in foodGroups){
+      if (typeof foodGroups[prop] === 'object'){
+        emptyArr.push(foodGroups[prop])
+      } else if (typeof foodGroups[prop] === 'function' && emptyArr.length === 0) {
+        let x = (foodGroups[prop]());
+        emptyArr.push(x);
+      }
+    } return emptyArr.flat();
+  }
+
+  extractCuisineTypesFromProps():Array<String>{
+    let allCuisineTypes:Array<String> = [];
+    for (let key in this.props.restaurants){
+      let cuisineString = this.props.restaurants[key][1];
+      let cuisineArray = cuisineString.split(",");
+      //console.log('cuisineArray: ', cuisineArray);
+      cuisineArray.map((item:any) => allCuisineTypes.push(item.trim()));
+    }
+    let unique = [...new Set(allCuisineTypes)];
+    return unique;
+  }
+
+
+  matchPropsAndFG(){
+    let unique = this.extractCuisineTypesFromProps();
+    let keywords = this.elementsOfFoodGroups();
+    console.log('unique: ', unique, '\n', "keywords: ", keywords);
+    let match:Array<String> = [];
+    for (let i=0; i<unique.length; i++) {
+      for (let j=0; j<keywords.length; j++) {
+        if (unique[i].toLowerCase() === keywords[j].toLowerCase()){
+          match.push(unique[i]);
+        }
+      }
+    }
+    //await match; //= [...new Set(match)];
+    match = [...new Set(match)];
+    console.log('match', match);
+    //if (match.length > 0) {
+      this.setState({
+        cuisineDropDown: match,
+        hasReceievedCuisineDropD: true
+      })
+    //}
+  }
+
+
+  grouping(pAndF:Array<String>){
+    let foodGroups:any = {
+      'American': ['american', 'new american','burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings', 'burger', "steak", "bbq"],
+      'Mexican': ['burritos', 'tacos', 'quesadillas', 'chile con carne', 'mexican', 'burrito', 'taqueria'],
+      'Breakfast': ['eggs', 'pancakes', 'waffles', ],
+      'Pizza': ['pizza', 'italian', 'lasagna', 'pizzeria'],
+      getDiner: function() {return [this.Breakfast,this.American,'diner', 'burgers', 'fries'].flat()},
+      'Japanese': ['japanese', 'sushi', 'bento box', 'ramen', 'noodles', 'asian'],
+      'Indian': ['indian', 'pakistani', 'tikka masala', 'naan', 'asian'],
+      'Ice Cream': ['dessert', 'ice cream', 'cake', 'dessert parlour', 'frozen yogurt'],
+      getSpanish: function() {return [this.Mexican,'paella','spanish', 'tapas'].flat()},
+      'Korean': ['korean', 'kbbq'],
+      'Coffee': ['cafe', 'coffee', 'tea', 'latte', 'mocha', 'cafe, coffee and tea', 'sandwich'],
+      'Fast Food': ['fast food', 'burgers'],
+      'Burmese': ['burma', 'burmese', 'asian'],
+      'Sandwich': ['sandwich', 'deli'],
+      'Vietnamese': ['vietnamese', 'pho', 'asian'],
+      'Cuban': ['cuban'],
+      'Lebanese': ['lebanese'],
+      'Juices': ['juices'],
+      'European': ['modern european', 'european'],
+      'Pub Food': ['pub food'],
+      'Grill': ['grill'],
+      'Healthy Food': ['healthy food'],
+      'Irish': ['irish','colcannon', 'full irish breakfast', 'soda bread', 'irish stew', 'fish and chips'],
+      'Hawaiian': ['hawaiian'],
+      'Mongolian': ['mongolian'],
+      'African': ['african'],
+      'German': ['german', 'bratwurst', 'currywurst', 'schnitzel'],
+      'Thai': ['thai', 'pad thai', 'asian'],
+      'Donuts': ['donuts', 'doughnuts'],
+      'Greek': ['greek', 'yogurt', 'moussaka', 'souvlaki', 'mediterranean'],
+      'Bakery': ['bakery', 'patisserie', 'pastries', 'bread', 'sandwich'],
+      'Seafood': ['seafood', 'fish', 'salmon', 'crab', 'lobster'],
+      'French': ['french', 'coq au vin', 'french onion soup'],
+      'Afghan': ['afghan', 'afghanistani', 'kebab', 'naan'],
+      'Turkish': ['turkish', 'baklava', 'menemen', 'yogurt', 'manti', 'shish kebab', 'kebab', 'turkish coffee'],
+      'Moroccan': ['moroccan', 'couscous', 'tagine', 'zaalouk'],
+      'Chinese': ['asian','chinese', 'cantonese','dim sum', 'egg rolls', 'noodles', 'sweet and sour pork', 'kung pao chicken', 'chow mein', 'duck', 'asian'],
       getMed: function(){return [this.Pizza,'mediterranean', 'greek', 'italian', 'turkish'].flat()}
     }
 
     let sanitizeInput = this.state.typeOfCuisine.toLowerCase();
 
+    //let keywordsFromFoodGroups:Array<String> = [];
     var compareInputToFoodGroups:any = () => {
       let emptyArr:any = []
       for (let prop in foodGroups){
@@ -219,11 +311,13 @@ export default class FormAndData extends Component<mProps, mState>{
       console.log('emptyArray: ',emptyArr);
       return emptyArr;
     }
+    //compareInputToFoodGroups()
+
+
 
     let compareAgain = () => {
-      console.log('compareAgain()')
+      console.log('pANDf: ', pAndF);
       let x:any = compareInputToFoodGroups();
-      console.log('x: ',x);
       let possibleRestaurants:Array<String> = [];
       let flattenResArray:Array<String> = [];
       for (let i=0; i<pAndF.length; i++){
@@ -239,8 +333,7 @@ export default class FormAndData extends Component<mProps, mState>{
           }
         }
       }
-      // console.log(this.props.restaurants);
-      console.log('z: ',possibleRestaurants);
+     console.log('compareAgain(),possibleRestaurants: ',possibleRestaurants);
       return possibleRestaurants;
     }
 
@@ -252,25 +345,6 @@ export default class FormAndData extends Component<mProps, mState>{
     })
   }
 
-  //let foodGroups = {}
-    /**
-     * Person inputs what type of food they like i.e. American, Japanese etc
-     *
-     *  Create an object with logical groupings of food types that the person may
-     *  have inputted i.e. '1':['Burgers', 'American', 'Fries', 'Hot Dogs'] - have all be lowercase?
-     *  We do this around 15 times or so trying to create potential cuisine groupings
-     *
-     *  We then get the input from the cuisine and we change to lowercase, (maybe see if we can add an 's' to some)
-     *  in order to increase likelyhood of user input matching something in the obj of arrays
-     *
-     *  Now we need to loop over the object of arrays. If the user input matches something within the first array it comes across
-     *  with thats identical then we take that array that it found the keyword in and we use all the
-     *  cuisine types/foods within that array as restaurant types the user is intrested in.
-     *
-     *  We get this array of cuisine types/foods the user may be interested in and try to match it against
-     *  the priceAndFormality array.
-     */
-
   errorStyle = {
     "color":"red"
   }
@@ -280,33 +354,37 @@ export default class FormAndData extends Component<mProps, mState>{
     return(
       !this.state.formAnswered ?
       <div>
-        <label>Preferred Cuisine Type: </label> <br></br>
-        <input onChange={this.cuisineInput} type="text"></input>
-        <br></br>
-        {/* {this.state.inputError ?
-          <p style={this.errorStyle}>The cuisine must be a word.</p>
-        :null} */}
-        <br></br>
-        <label>Maximum Cost per Person:</label> <br></br>
-        <input onChange={this.priceRange} type="text" />
-        <br></br>
-        {/* {this.state.inputError ?
-          <p style={this.errorStyle}>The price must be a number.</p>
-        :null} */}
-        <br></br>
-        <label>Dining Formality</label>
-        <br/>
-        <input onChange={this.casualDining} type="checkbox" value="Casual"/><label>Casual Dining</label>
-        <input onChange={this.fineDining} type="checkbox" value="Fine"/><label>Fine Dining</label>
+
+        {this.state.cuisineDropDown.length > 0 ?
+        <div>
+          <label>Preferred Cuisine Type: </label>
+          <br></br>
+          <select>
+          <option selected disabled hidden value="">Pick from drop down menu</option>
+          {this.state.cuisineDropDown.map((item:any) => {
+            return (
+              <option onClick={this.cuisineInput} value={item}>{item}</option>
+            )
+          })}
+          </select>
+          <br></br>
+          <br></br>
+          <label>Maximum Cost per Person:</label> <br></br>
+          <input onChange={this.priceRange} type="text" />
+          <br></br>
+          <br></br>
+          <label>Dining Formality</label>
+          <br/>
+          <input onChange={this.casualDining} type="checkbox" value="Casual"/><label>Casual Dining</label>
+          <input onChange={this.fineDining} type="checkbox" value="Fine"/><label>Fine Dining</label>
+        </div>
+        :<p>Loading restaurant selector...</p>}
         {this.state.inputError ?
           <p style={this.errorStyle}>{this.state.inputError}</p>
         :null}
         <br/>
-        {Object.keys(this.props.restaurants).length > 0 ?
-          console.log(this.extractCuisineTypesFromProps())
-        :null}
         {console.log('restaurant props len: ',Object.keys(this.props.restaurants).length)}
-        {!this.state.inputError && Object.keys(this.props.restaurants).length > 0 ?
+        {!this.state.inputError && Object.keys(this.props.restaurants).length > 0 && this.state.cuisineDropDown.length > 0 ?
             <button onClick={this.answeredQuestions}>Find Suggested Restaurants</button>
         :null}
       </div>

@@ -33,6 +33,7 @@ export default class Potentials extends Component<Props, State>{
   }
 
   handleClick(e:any){
+    console.log('clicked.')
     let loc = e.target.innerText
     let id = e.target.id
     this.setState({
