@@ -1,10 +1,12 @@
 import * as React from 'react'
 
 import Nutrition from './Nutrition';
+import FilterRestaurants from './FilterRestaurants';
+
 
 type myProps = {
   list: any,
-  child: any //Need to pass data back to parent;
+  //child: any //Need to pass data back to parent;
 }
 
 type myState = {

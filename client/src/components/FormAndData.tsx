@@ -66,6 +66,7 @@ export default class FormAndData extends Component<mProps, mState>{
 
     console.log('cuisine: ', cuisine);
 
+    //need to fix regex so if word has a space its fine. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     let wordCheckBoolean = (cuisine.match(/[a-zA-Z]/g) != null) && (cuisine.match(/[a-zA-Z]/g).length === cuisine.length)
 
     if (wordCheckBoolean || cuisine === ""){
@@ -89,13 +90,18 @@ export default class FormAndData extends Component<mProps, mState>{
     console.log(price === 0);
 
     if (priceCheckBoolean || price === ""){
+      //need to check what state was, ie if you put in letters for price
+      //but you go to drop down menu and pick something acceptable then
+      //the inputError is reset to "", so either we need 2 states for error
+      //or we need to check old state and if the old state had the error even if
+      //the new selection is great we need to keep the old error until its fixed.
       this.setState({
         priceRange: Number(price),
         inputError: ""
       });
     } else {
       this.setState({
-        inputError: "Must use only numbers for amount spent."
+        inputError: "Must use only numbers for amount spent. Enter an amount between 5-500"
       });
     }
   }
@@ -370,7 +376,7 @@ export default class FormAndData extends Component<mProps, mState>{
           <br></br>
           <br></br>
           <label>Maximum Cost per Person:</label> <br></br>
-          <input onChange={this.priceRange} type="text" />
+          <input onChange={this.priceRange} type="text" placeholder="Enter amount in local currency"/>
           <br></br>
           <br></br>
           <label>Dining Formality</label>

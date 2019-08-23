@@ -5,6 +5,7 @@ import Potentials from './components/Potentials'
 import FormAndData from './components/FormAndData'
 import RestaurantList from './components/RestaurantList';
 import Nutriton from './components/Nutrition';
+import FilterRestaurants from './components/FilterRestaurants';
 
 type MyState = {
    latitude: Number,
@@ -50,7 +51,6 @@ export default class App extends React.Component<{}, MyState> {
     this.FormAndDataToApp = this.FormAndDataToApp.bind(this);
     this.calculationWithHaversine = this.calculationWithHaversine.bind(this);
     this.haversineFormula = this.haversineFormula.bind(this);
-    this.desiredCuisine = this.desiredCuisine.bind(this);
   }
 
   componentDidMount(){
@@ -295,9 +295,6 @@ export default class App extends React.Component<{}, MyState> {
     return answer
   }
 
-  desiredCuisine(val?:any):void{
-  }
-
   render() {
     //We check if needsBox is true, if it is then we start w/ a form and text box.
 
@@ -333,11 +330,16 @@ export default class App extends React.Component<{}, MyState> {
 
           :null}
 
-          {this.state.validLocation ?
+          {this.state.validLocation && Object.keys(this.state.ActualRestaurants).length > 0 ?
 
+            <FilterRestaurants restaurants={this.state.ActualRestaurants}/>
+
+          :null}
+
+          {this.state.validLocation ?
             /* Only way I could  */
             Object.keys(this.state.ActualRestaurants).length > 0 ?
-              <RestaurantList list={this.state.ActualRestaurants} child={this.desiredCuisine}/>
+              <RestaurantList list={this.state.ActualRestaurants} />
             :null
 
           : null}
