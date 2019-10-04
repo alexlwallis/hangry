@@ -27,10 +27,19 @@ export default class Potentials extends Component<Props, State>{
     this.getIDs = this.getIDs.bind(this);
   }
 
-  componentDidMount(){
+
+  //State is updated when submit query is clicked, but
+  //page isn't refreshed?
+  componentWillMount(){
     this.getIDs(this.props.locations)
     this.cleanUp(this.props.locations)
   }
+
+
+  // componentWillReceiveProps(){
+  //   this.getIDs(this.props.locations)
+  //   this.cleanUp(this.props.locations)
+  // }
 
   handleClick(e:any){
     console.log('clicked.')

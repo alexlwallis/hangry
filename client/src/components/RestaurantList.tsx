@@ -6,7 +6,7 @@ import FilterRestaurants from './FilterRestaurants';
 
 type myProps = {
   list: any,
-  //child: any //Need to pass data back to parent;
+  filter: Array<String>
 }
 
 type myState = {
@@ -34,6 +34,13 @@ export default class RestaurantList extends React.Component<myProps, myState>{
     this.revealNames();
   }
 
+  componentWillMount(){
+    let nonDup = [];
+    for (let obj in this.props.list){
+      nonDup.push(Object.values(this.props.list[obj]))
+    }
+  }
+
   revealNames():void{
     let nonDup = [];
     for (let obj in this.props.list){
@@ -42,6 +49,7 @@ export default class RestaurantList extends React.Component<myProps, myState>{
     this.setState({
       nonDuplicates: nonDup
     })
+    //this.props.list = nonDup;
   }
 
   handleClick(e:any):void{
@@ -67,7 +75,39 @@ export default class RestaurantList extends React.Component<myProps, myState>{
 
   render(){
     return (
-      this.state.nonDuplicates.map((item:Array<String>,  i:any) => {
+      <div>
+        {this.props.filter.length === 0 ?
+
+         this.state.nonDuplicates.map((item:Array<String>,  i:any) => {
+          return (
+          <div>
+            <h3>{item[7]}</h3>
+            <ul>
+                <li>Address:  {item[0]}</li>
+              {Number(item[2]) > 0 ?
+                <li>Estimated price per person: {item[10]} {Number(item[2])/2}</li>
+              :null}
+                <li>Telephone Number: {item[4]}</li>
+                <li>Opening Hours: {item[5]}</li>
+                <li>Ratings: {item[3]}/5</li>
+              {item[6] === 'Fine Dining' ?
+                <li>Fine Dining</li>
+              : <li>Casual Atmosphere</li>}
+              {item[11] ?
+                <li> Distance from you: {item[11]} miles</li>
+              :null}
+            </ul>
+            <p onClick={this.handleClick}>Want estimated nutrional facts?</p>
+
+            {/* Matches the clicked <p>'s address with the iterated nonDup map */}
+            {(item[0] === this.state.whichRestaurant) ?
+              <Nutrition potentialCuisines={this.state.desiredCuisines} whichRestaurant={i}/>
+            :null}
+          </div>
+          )
+        })
+      :
+        this.props.filter.map((item:any,  i:any) => {
         return (
           <div>
             <h3>{item[7]}</h3>
@@ -93,8 +133,9 @@ export default class RestaurantList extends React.Component<myProps, myState>{
               <Nutrition potentialCuisines={this.state.desiredCuisines} whichRestaurant={i}/>
             :null}
           </div>
-        )
-      })
+          )
+        })}
+      </div>
     )
   }
 }

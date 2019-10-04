@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { Component } from "react";
+import FilterRestaurants from "./FilterRestaurants";
 
 
 type mProps = {
   restaurants: any,
-  child: any
-}
+  child: any,
+};
 
 type mState = {
-  formAnswered: Boolean,
+  needToAnswerForm: Boolean,
   typeOfCuisine: String,
   priceRange: Number,
   fineDine: Boolean,
@@ -17,7 +18,8 @@ type mState = {
   inputError: String,
   cuisineDropDown: Array<String>,
   hasReceievedCuisineDropD: Boolean,
-  propsCuisine: Array<String>
+  propsCuisine: Array<String>,
+  propsData: Array<String>
 };
 
 
@@ -25,7 +27,7 @@ export default class FormAndData extends Component<mProps, mState>{
   constructor(props:any){
     super(props)
     this.state = {
-      formAnswered: false,
+      needToAnswerForm: true,
       typeOfCuisine: '',
       priceRange: 0,
       fineDine: false,
@@ -34,7 +36,8 @@ export default class FormAndData extends Component<mProps, mState>{
       inputError: "",
       cuisineDropDown: [],
       hasReceievedCuisineDropD: false,
-      propsCuisine: []
+      propsCuisine: [],
+      propsData: []
     }
     this.cuisineInput = this.cuisineInput.bind(this);
     this.priceRange = this.priceRange.bind(this);
@@ -49,37 +52,28 @@ export default class FormAndData extends Component<mProps, mState>{
 
   //May want to consider putting in a dropdown menu w/ combination of
   //cuisine types from possible location and from foodGroups object.
-  componentWillUpdate(){
-    //If components has ran and we've got the props to go
-    //without the if it'll just run recursively.
-    if (!this.state.hasReceievedCuisineDropD){
-      this.matchPropsAndFG();
-    }
-  }
+  componentWillMount(){
+    this.matchPropsAndFG();
+  };
 
 
   cuisineInput(e:any){
 
-    console.log('e: ',e);
 
     let cuisine = (e.target.value);
-
     console.log('cuisine: ', cuisine);
 
     //need to fix regex so if word has a space its fine. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    let wordCheckBoolean = (cuisine.match(/[a-zA-Z]/g) != null) && (cuisine.match(/[a-zA-Z]/g).length === cuisine.length)
+    //let wordCheckBoolean = (cuisine.match(/[a-zA-Z]/g) != null) && (cuisine.match(/[a-zA-Z]/g).length === cuisine.length)
 
-    if (wordCheckBoolean || cuisine === ""){
+    //if (wordCheckBoolean || cuisine === ""){
       this.setState({
         inputError: "",
         typeOfCuisine: cuisine
       });
       //error handling
-    } else {
-      this.setState({
-        inputError: "Cuisine input must be an alphabetical word."
-      });
-    }
+      // - Since drop down menu dont need error handling
+
   }
 
   priceRange(e:any):void{
@@ -127,8 +121,8 @@ export default class FormAndData extends Component<mProps, mState>{
 
   answeredQuestions():void{
     this.setState({
-      formAnswered: true
-    })
+      needToAnswerForm: false
+    });
     let priceAdjusted:Array<String> = [];
       for (let obj in this.props.restaurants){
         //In api the restaurant pricing is for 2. So need to halve it.
@@ -153,10 +147,10 @@ export default class FormAndData extends Component<mProps, mState>{
       }
     }
 
-    console.log('answeredQs: ',priceAndFormality,"\n",priceAdjusted,"\n", this.props.restaurants);
+    //console.log('answeredQs: ',priceAndFormality,"\n",priceAdjusted,"\n", this.props.restaurants);
 
     // console.log(Object.keys(this.props.restaurants));
-    console.log('priceAndFormality: ',priceAndFormality)
+    //console.log('priceAndFormality: ',priceAndFormality)
     this.grouping(priceAndFormality); //Restaurants that match price/formality level
   }
 
@@ -167,6 +161,7 @@ export default class FormAndData extends Component<mProps, mState>{
       'Breakfast': ['eggs', 'pancakes', 'waffles', ],
       'Pizza': ['pizza', 'italian', 'lasagna', 'pizzeria'],
       getDiner: function() {return [this.Breakfast,this.American,'diner', 'burgers', 'fries'].flat()},
+      'Sushi': ['sushi', 'japanese', 'asian'],
       'Japanese': ['japanese', 'sushi', 'bento box', 'ramen', 'noodles', 'asian'],
       'Indian': ['indian', 'pakistani', 'tikka masala', 'naan', 'asian'],
       'Ice Cream': ['dessert', 'ice cream', 'cake', 'dessert parlour', 'frozen yogurt'],
@@ -217,7 +212,6 @@ export default class FormAndData extends Component<mProps, mState>{
     for (let key in this.props.restaurants){
       let cuisineString = this.props.restaurants[key][1];
       let cuisineArray = cuisineString.split(",");
-      //console.log('cuisineArray: ', cuisineArray);
       cuisineArray.map((item:any) => allCuisineTypes.push(item.trim()));
     }
     let unique = [...new Set(allCuisineTypes)];
@@ -228,7 +222,6 @@ export default class FormAndData extends Component<mProps, mState>{
   matchPropsAndFG(){
     let unique = this.extractCuisineTypesFromProps();
     let keywords = this.elementsOfFoodGroups();
-    console.log('unique: ', unique, '\n', "keywords: ", keywords);
     let match:Array<String> = [];
     for (let i=0; i<unique.length; i++) {
       for (let j=0; j<keywords.length; j++) {
@@ -237,15 +230,11 @@ export default class FormAndData extends Component<mProps, mState>{
         }
       }
     }
-    //await match; //= [...new Set(match)];
     match = [...new Set(match)];
-    console.log('match', match);
-    //if (match.length > 0) {
       this.setState({
         cuisineDropDown: match,
         hasReceievedCuisineDropD: true
       })
-    //}
   }
 
 
@@ -254,6 +243,7 @@ export default class FormAndData extends Component<mProps, mState>{
       'American': ['american', 'new american','burgers', 'fries', 'hot dogs', 'wings', 'buffalo wings', 'burger', "steak", "bbq"],
       'Mexican': ['burritos', 'tacos', 'quesadillas', 'chile con carne', 'mexican', 'burrito', 'taqueria'],
       'Breakfast': ['eggs', 'pancakes', 'waffles', ],
+      'Sushi': ['sushi', 'japanese', 'asian'],
       'Pizza': ['pizza', 'italian', 'lasagna', 'pizzeria'],
       getDiner: function() {return [this.Breakfast,this.American,'diner', 'burgers', 'fries'].flat()},
       'Japanese': ['japanese', 'sushi', 'bento box', 'ramen', 'noodles', 'asian'],
@@ -298,7 +288,6 @@ export default class FormAndData extends Component<mProps, mState>{
       let emptyArr:any = []
       for (let prop in foodGroups){
         if (typeof foodGroups[prop] === 'object'){
-          console.log('obj')
           foodGroups[prop].filter((item:Array<String>) => {
             if (item.includes(sanitizeInput) && emptyArr.length === 0){
               emptyArr = (foodGroups[prop])
@@ -322,7 +311,7 @@ export default class FormAndData extends Component<mProps, mState>{
 
 
     let compareAgain = () => {
-      console.log('pANDf: ', pAndF);
+      //console.log('pANDf: ', pAndF);
       let x:any = compareInputToFoodGroups();
       let possibleRestaurants:Array<String> = [];
       let flattenResArray:Array<String> = [];
@@ -339,7 +328,7 @@ export default class FormAndData extends Component<mProps, mState>{
           }
         }
       }
-     console.log('compareAgain(),possibleRestaurants: ',possibleRestaurants);
+     //console.log('compareAgain(),possibleRestaurants: ',possibleRestaurants);
       return possibleRestaurants;
     }
 
@@ -358,42 +347,41 @@ export default class FormAndData extends Component<mProps, mState>{
 
   render(){
     return(
-      !this.state.formAnswered ?
       <div>
 
-        {this.state.cuisineDropDown.length > 0 ?
-        <div>
-          <label>Preferred Cuisine Type: </label>
-          <br></br>
-          <select>
-          <option selected disabled hidden value="">Pick from drop down menu</option>
-          {this.state.cuisineDropDown.map((item:any) => {
-            return (
-              <option onClick={this.cuisineInput} value={item}>{item}</option>
-            )
-          })}
-          </select>
-          <br></br>
-          <br></br>
-          <label>Maximum Cost per Person:</label> <br></br>
-          <input onChange={this.priceRange} type="text" placeholder="Enter amount in local currency"/>
-          <br></br>
-          <br></br>
-          <label>Dining Formality</label>
+          {this.state.cuisineDropDown.length > 0 ?
+          <div>
+            <label>Preferred Cuisine Type: </label>
+            <br></br>
+            <select onChange={this.cuisineInput}>
+              <option selected disabled hidden value="">Pick from drop down menu</option>
+              {this.state.cuisineDropDown.map((item:any) => {
+                return (
+                  <option value={item}>{item}</option>
+                )
+              })}
+            </select>
+            <br></br>
+            <br></br>
+            <label>Maximum Cost per Person:</label> <br></br>
+            <input onChange={this.priceRange} type="text" placeholder="Enter amount in local currency"/>
+            <br></br>
+            <br></br>
+            <label>Dining Formality</label>
+            <br/>
+            <input onChange={this.casualDining} type="checkbox" value="Casual"/><label>Casual Dining</label>
+            <input onChange={this.fineDining} type="checkbox" value="Fine"/><label>Fine Dining</label>
+          </div>
+          :<p>Loading restaurant selector...</p>}
+          {this.state.inputError ?
+            <p style={this.errorStyle}>{this.state.inputError}</p>
+          :null}
+
           <br/>
-          <input onChange={this.casualDining} type="checkbox" value="Casual"/><label>Casual Dining</label>
-          <input onChange={this.fineDining} type="checkbox" value="Fine"/><label>Fine Dining</label>
-        </div>
-        :<p>Loading restaurant selector...</p>}
-        {this.state.inputError ?
-          <p style={this.errorStyle}>{this.state.inputError}</p>
-        :null}
-        <br/>
-        {console.log('restaurant props len: ',Object.keys(this.props.restaurants).length)}
-        {!this.state.inputError && Object.keys(this.props.restaurants).length > 0 && this.state.cuisineDropDown.length > 0 ?
-            <button onClick={this.answeredQuestions}>Find Suggested Restaurants</button>
-        :null}
+          {console.log('restaurant props len: ',Object.keys(this.props.restaurants).length)}
+          {!this.state.inputError && Object.keys(this.props.restaurants).length > 0 && this.state.cuisineDropDown.length > 0 ?
+              <button onClick={this.answeredQuestions}>Find Suggested Restaurants</button>
+          :null}
       </div>
-      : null) //<Sorting restaurants={this.props.restaurants} />
-  }
+  )}
 }

@@ -19,7 +19,8 @@ type MyState = {
    ActualRestaurants: any,
    desiredCuisines: String,
    validLocation: Boolean,
-   ableToFindLocation: String
+   ableToFindLocation: String,
+   filterOpen: Array<String>
 }
 
 export default class App extends React.Component<{}, MyState> {
@@ -37,7 +38,8 @@ export default class App extends React.Component<{}, MyState> {
       ActualRestaurants: {},
       desiredCuisines: '',
       validLocation: true,
-      ableToFindLocation: ""
+      ableToFindLocation: "",
+      filterOpen: []
     }
     this.geo = this.geo.bind(this);
     this.changeCity = this.changeCity.bind(this);
@@ -51,11 +53,11 @@ export default class App extends React.Component<{}, MyState> {
     this.FormAndDataToApp = this.FormAndDataToApp.bind(this);
     this.calculationWithHaversine = this.calculationWithHaversine.bind(this);
     this.haversineFormula = this.haversineFormula.bind(this);
-  }
+    this.passBackOpenRestaurants = this.passBackOpenRestaurants.bind(this);
+  };
 
   componentDidMount(){
     this.geo();
-
   }
 
   geo(){
@@ -69,6 +71,7 @@ export default class App extends React.Component<{}, MyState> {
         longitude: lon,
         needsBox: false,
       })
+      console.log("lat: ", this.state.latitude, " long: ",this.state.longitude)
       //If person wants to use geolocation, we send latitude and longitude to server.
       this.addLatLon();
     //If there is an error w/ geolocation, we change state, so needsBox is true.
@@ -126,8 +129,9 @@ export default class App extends React.Component<{}, MyState> {
 
   handleSubmit(event: any){
     event.preventDefault();
+
     let location = this.state.location
-    console.log(location)
+    console.log('handleSubmit: ',location)
     fetch('/', {
       method: 'POST',
       headers: {
@@ -177,6 +181,7 @@ export default class App extends React.Component<{}, MyState> {
     let id = (val.split('$')[1])
     let actualAddress = (val.split('$')[0])
     let altered = this.stringToNumberArr(idsString);
+    console.log('idString: ',idsString, " id: ", id, " actualAddress: ", actualAddress, " altered: ", altered);
     this.setState({
       //actualID: altered[Number(id)],
       //Setting possibleLocations to emptyArr gets rid of cities from DOM
@@ -185,7 +190,6 @@ export default class App extends React.Component<{}, MyState> {
       ableToFindLocation: "yes"
     })
     this.sendingEntityId(altered[Number(id)]);
-    //this.sendingEntityId(this.state.actualID)
   }
 
   FormAndDataToApp(val:any){
@@ -228,7 +232,7 @@ export default class App extends React.Component<{}, MyState> {
       return (res.json());
     })
     .then((json:any) => {
-      console.log('Am I here?')
+      console.log('Am I here?', json)
       let obj = Object.assign({}, json[0], json[1], json[2], json[3], json[4])
       this.setState({
         validLocation: true,
@@ -269,7 +273,7 @@ export default class App extends React.Component<{}, MyState> {
       for (let obj in this.state.ActualRestaurants){
         let lat = Number(this.state.ActualRestaurants[obj][8]);
         let lon = Number(this.state.ActualRestaurants[obj][9]);
-        console.log(this.haversineFormula(latitude, longitude, lat, lon))
+        //console.log(this.haversineFormula(latitude, longitude, lat, lon))
         this.state.ActualRestaurants[obj][11] = this.haversineFormula(latitude, longitude, lat, lon)
       }
     }
@@ -293,6 +297,22 @@ export default class App extends React.Component<{}, MyState> {
     let c = 2 * Math.atan2(Math.sqrt(A), Math.sqrt(1-A));
     let answer = String(radius * c).slice(0,4)
     return answer
+  }
+
+  passBackOpenRestaurants(e:any){
+    let openRestaurants = e
+    let totalRestaurants = Object.keys(this.state.ActualRestaurants);
+    //console.log('og tR: ', totalRestaurants, "\n", "oR: ", openRestaurants);
+    let x = totalRestaurants.filter(item => openRestaurants.includes(item));
+    let filterOpen = [];
+    for (let key in this.state.ActualRestaurants){
+      if (openRestaurants.includes(key)){
+        filterOpen.push(this.state.ActualRestaurants[key]);
+      }
+    }
+    this.setState({
+      filterOpen: filterOpen
+    })
   }
 
   render() {
@@ -322,24 +342,24 @@ export default class App extends React.Component<{}, MyState> {
         : null}
 
 
-          {this.state.possibleLocations.length === 1 ?
+        {/* {this.state.possibleLocations.length === 1 ? */}
 
-            this.state.restaurantObj ?
+            {Object.keys(this.state.restaurantObj).length > 0 ?
               <FormAndData restaurants={this.state.restaurantObj} child={this.FormAndDataToApp}/>
-            :null
+            :null}
 
-          :null}
+          {/* :null} */}
 
           {this.state.validLocation && Object.keys(this.state.ActualRestaurants).length > 0 ?
 
-            <FilterRestaurants restaurants={this.state.ActualRestaurants}/>
+            <FilterRestaurants restaurants={this.state.ActualRestaurants} pb={this.passBackOpenRestaurants}/>
 
           :null}
 
           {this.state.validLocation ?
             /* Only way I could  */
             Object.keys(this.state.ActualRestaurants).length > 0 ?
-              <RestaurantList list={this.state.ActualRestaurants} />
+              <RestaurantList list={this.state.ActualRestaurants} filter={this.state.filterOpen}/>
             :null
 
           : null}

@@ -145,6 +145,8 @@ function chosenPlaceToRestaurants(id, start, count, cb) {
                             var necessaryData = {};
                             res.data.restaurants.map(function (item) {
                                 var key = (item.restaurant.name);
+                                //Try out the item.restaurant.menu_url.
+                                //Might want to download a library to parse it.
                                 var interestingData = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude, item.restaurant.currency];
                                 necessaryData[key] = interestingData;
                             });
@@ -176,8 +178,9 @@ function locationToCoords(q, cb) {
         var necessaryData = {};
         res.data.location_suggestions.map(function (item) {
             var name = item.name;
-            necessaryData[name] = [item.country_name, item.id];
+            necessaryData[name] = [item.country_name, JSON.stringify(item.id)];
         });
+        console.log('lTC: ', necessaryData);
         cb(necessaryData);
     })["catch"](function (err) { console.error(err); });
 }

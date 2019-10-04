@@ -107,6 +107,8 @@ export async function chosenPlaceToRestaurants(id:string, start:Number, count:Nu
     let necessaryData: any = {}
     res.data.restaurants.map((item: any) => {
       let key = (item.restaurant.name)
+      //Try out the item.restaurant.menu_url.
+        //Might want to download a library to parse it.
       let interestingData: Object = [item.restaurant.location.address, item.restaurant.cuisines, item.restaurant.average_cost_for_two, item.restaurant.user_rating.aggregate_rating, item.restaurant.phone_numbers, item.restaurant.timings, item.restaurant.establishment, item.restaurant.name, item.restaurant.location.latitude, item.restaurant.location.longitude, item.restaurant.currency]
       necessaryData[key] = interestingData;
     })
@@ -139,9 +141,10 @@ export function locationToCoords(q: string, cb:Function){
     let necessaryData: any = {};
     res.data.location_suggestions.map((item:any) => {
       let name = item.name
-      necessaryData[name] = [item.country_name, item.id]
+      necessaryData[name] = [item.country_name, JSON.stringify(item.id)]
     })
-    cb(necessaryData)
+    console.log('lTC: ', necessaryData);
+    cb(necessaryData);
   })
   .catch((err:any) => {console.error(err)});
 }
