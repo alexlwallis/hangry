@@ -300,19 +300,26 @@ export default class App extends React.Component<{}, MyState> {
   }
 
   passBackOpenRestaurants(e:any){
-    let openRestaurants = e
-    let totalRestaurants = Object.keys(this.state.ActualRestaurants);
-    //console.log('og tR: ', totalRestaurants, "\n", "oR: ", openRestaurants);
-    let x = totalRestaurants.filter(item => openRestaurants.includes(item));
-    let filterOpen = [];
-    for (let key in this.state.ActualRestaurants){
-      if (openRestaurants.includes(key)){
-        filterOpen.push(this.state.ActualRestaurants[key]);
-      }
-    }
+    console.log("pbr: ", e);
+
+    //We set list of open restaurants and whether or not we want currently open in state
     this.setState({
-      filterOpen: filterOpen
+      filterOpen: e
     })
+    
+    //let openRestaurants = e
+    // let totalRestaurants = Object.keys(this.state.ActualRestaurants);
+    // //console.log('og tR: ', totalRestaurants, "\n", "oR: ", openRestaurants);
+    // let x = totalRestaurants.filter(item => openRestaurants.includes(item));
+    // let filterOpen = [];
+    // for (let key in this.state.ActualRestaurants){
+    //   if (openRestaurants.includes(key)){
+    //     filterOpen.push(this.state.ActualRestaurants[key]);
+    //   }
+    // }
+    // this.setState({
+    //   filterOpen: filterOpen
+    // })
   }
 
   render() {
